@@ -1,9 +1,9 @@
 def create_permutation (array:list, length:int, required_length:int, alowed_values:list):
     if length == required_length:
-        for number in alowed_values:
-            array.append(number)
-            main_array.append(array.copy())
-            array.pop(len(array) - 1)
+        number = alowed_values[0]
+        array.append(number)
+        main_array.append(array.copy())
+        array.pop(len(array) - 1)
     else:
         length += 1
         for number in alowed_values.copy():
@@ -11,7 +11,7 @@ def create_permutation (array:list, length:int, required_length:int, alowed_valu
             alowed_values.remove(number)
             create_permutation(array, length, required_length, alowed_values)
             array.pop(len(array) - 1)
-            alowed_values.insert(0, number)
+            alowed_values.append(number)
 
 
 
@@ -24,15 +24,16 @@ def start_permutation (required_length:int):
     create_permutation(array, length, required_length, alowed_values)
 
 
-required_length = 8
+required_length = 4
 
 main_array = []
 start_permutation(required_length)
 
-#for array in main_array:
-#    if main_array.count(array) > 1:
-#        print("!!!!!!!!!", array)
-#
-#    print(array)
+for array in main_array:
+    main_array.remove(array)
+    print(array)
+    if array in main_array:
+        print("sos")
+
 
 print(len(main_array))
