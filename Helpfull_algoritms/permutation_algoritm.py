@@ -24,16 +24,14 @@ def start_permutation (required_length:int):
     create_permutation(array, length, required_length, alowed_values)
 
 
-required_length = 4
+required_length = 6
 
 main_array = []
 start_permutation(required_length)
 
-for array in main_array:
-    main_array.remove(array)
+for array in main_array.copy():
     print(array)
-    if array in main_array:
-        print("sos")
+
 
 
 print(len(main_array))
