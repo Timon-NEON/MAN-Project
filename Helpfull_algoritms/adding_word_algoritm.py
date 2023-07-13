@@ -1,24 +1,23 @@
 """DONE permutation algoritm, check compatibility of words, visualisation of crossword"""
 
 from tkinter import *
+from tkinter import font
 import copy
 
 
 class Crossword:
+    """Generate crossword puzzles"""
 
     def __init__(self):
-        #self.crossword = [0, [], {}]
         self.shown_index = 0
 
-    def add_words (self, given_words:list):
+    def generate_all_crosswords (self, given_words:list):
         self.all_crossword = [0, []]
         length = 2
         alowed_values = given_words
         self.required_length = len(given_words)
         for word in alowed_values.copy():
             array = Crossword.__insert_word(self, word, False, 0, 0, [0, [], {}])
-            #print()
-            #print(array)
             alowed_values.remove(word)
             Crossword.__make_permutation(self, length, array, alowed_values)
             alowed_values.append(word)
@@ -58,8 +57,6 @@ class Crossword:
         for coordinate, letter in crossword[2].items():                       #EXAM 0
             if letter in word:
                 possible_intersections[coordinate] = letter
-
-        #print("Exam 0: " + str (possible_intersections))
 
         for coordinate in possible_intersections.copy():      #EXAM 1
             if coordinate in crossword[1]:
@@ -115,9 +112,7 @@ class Crossword:
                         temp_crossword = crossword.copy()
                         temp_crossword[1] += intersections.copy()
                         temp_crossword[0] += len(intersections.copy())
-                        temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0], coordinate[1] + index, temp_crossword)
-                        print(crossword)
-                        print(temp_crossword, word)
+                        temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0], coordinate[1] + index, copy.deepcopy(temp_crossword))
                         new_crosswords.append(temp_crossword.copy())
                     else:
                         continue
@@ -153,9 +148,7 @@ class Crossword:
                         temp_crossword = crossword.copy()
                         temp_crossword[1] += intersections.copy()
                         temp_crossword[0] += len(intersections.copy())
-                        temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0] - index, coordinate[1], temp_crossword)
-                        print(crossword)
-                        print(temp_crossword, word)
+                        temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0] - index, coordinate[1], copy.deepcopy(temp_crossword))
                         new_crosswords.append(temp_crossword.copy())
                     else:
                         continue
@@ -186,44 +179,71 @@ class Crossword:
         return new_crossword
 
 
-    def forward_visual_command(self):
-        if len(self.all_crossword[1]) - 1 > self.shown_index:
-            self.shown_index += 1
-
-
     def create_visualisation (self):
-        window = Tk()
-        window.title('Тест кросворда')
+        self.window = Tk()
+        self.window.title('Тест кросворда')
         # root.geometry('700x300')
 
-        crosword_interface = Frame()
-        crosword_interface.grid(row=0, column=0)
-        crossword_visual = Frame(master=crosword_interface)
-        crossword_visual.grid(row=0, column=0)
+        self.crosword_interface = Frame()
+        self.crosword_interface.grid(row=0, column=0)
+        self.crossword_visual = Frame(master=self.crosword_interface)
+        self.crossword_visual.grid(row=0, column=0, columnspan=2)
 
-        self.shown_index = 20
-        crossword_shown = self.all_crossword[1][self.shown_index]
+        if len(self.all_crossword[1]) != 0:
+            self.shown_index = 0
+            self.__create_crossword_structer(self.all_crossword[1][self.shown_index])
+        else:
+            self.__message_no_crosswords()
 
-        max_x, min_x, max_y, min_y = Crossword.__get_size(self, crossword_shown)
-        #size_x = int (max_x - min_x)
-        #size_y = int (max_y - min_y)
-        for row, coordinate_y in enumerate( range(int (max_y), int(min_y) - 1, -1)):
-            for column, coordinate_x in enumerate( range(int (min_x), int(max_x) + 1)):
+        btn_font = font.Font(size=16)
+        if len(self.all_crossword[1]) > 1:
+            button_forward = Button(master=self.crosword_interface, text="▶", width=3, height=1, font=btn_font,
+                                    command=lambda: Crossword.__forward_visual_btncommand(self))
+            button_forward.grid(row=1, column=1)
+            button_backward = Button(master=self.crosword_interface, text="◀", width=3, height=1, font=btn_font,
+                                     command=lambda: Crossword.__backward_visual_btncommand(self))
+            button_backward.grid(row=1, column=0)
+
+        self.window.mainloop()
+
+    def __create_crossword_structer(self, crossword_displayed):
+        max_x, min_x, max_y, min_y = Crossword.__get_size(self, crossword_displayed)
+        # size_x = int (max_x - min_x)
+        # size_y = int (max_y - min_y)
+        for row, coordinate_y in enumerate(range(int(max_y), int(min_y) - 1, -1)):
+            for column, coordinate_x in enumerate(range(int(min_x), int(max_x) + 1)):
                 coordinate = (coordinate_x, coordinate_y)
-                if coordinate in crossword_shown[2].keys():
-                    text = str (crossword_shown[2][coordinate])
+                if coordinate in crossword_displayed[2].keys():
+                    text = str(crossword_displayed[2][coordinate])
                 else:
                     text = ''
-                new_entry = Entry(master=crossword_visual, width=3)
+                new_entry = Entry(master=self.crossword_visual, width=3)
                 new_entry.grid(row=row, column=column)
                 new_entry.insert(0, text)
 
-        #button_foward = Button(master=crosword_interface, text="▶")
-        #button_foward.bind("<Button-1>", button_foward(self))
-        #button_foward.grid(row=1, column=0)
+    def __message_no_crosswords (self):
+        message_label = Label(master=self.crossword_visual, text="Нажаль з наданих слів неможливо створити кросворди.\nСпробуйте інші слова")
+        message_label.grid(row=0, column=0)
 
+    def __clear_frame_crossword_visual(self):
+        if self.crossword_visual.children:
+            for widget in self.crossword_visual.winfo_children():
+                widget.destroy()
 
-        window.mainloop()
+    def __forward_visual_btncommand(self):
+        print(1)
+        if len(self.all_crossword[1]) - 1 > self.shown_index:
+            self.shown_index += 1
+            self.__clear_frame_crossword_visual()
+            self.__create_crossword_structer(self.all_crossword[1][self.shown_index])
+
+    def __backward_visual_btncommand(self):
+        print(2)
+        if self.shown_index > 0:
+            self.shown_index -= 1
+            self.__clear_frame_crossword_visual()
+            self.__create_crossword_structer(self.all_crossword[1][self.shown_index])
+
 
     def __get_size (self, crossword:list):
         """get max_x, min_x, max_y, min_y coordinate from crossword"""
