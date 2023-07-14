@@ -3,6 +3,7 @@
 from tkinter import *
 from tkinter import font
 import copy
+import random
 
 
 class Crossword:
@@ -19,11 +20,11 @@ class Crossword:
         for word in alowed_values.copy():
             array = Crossword.__insert_word(self, word, False, 0, 0, [0, [], {}])
             alowed_values.remove(word)
-            Crossword.__make_permutation(self, length, array, alowed_values)
+            Crossword.__make_permutation_all_crosswords(self, length, array, alowed_values)
             alowed_values.append(word)
 
 
-    def __make_permutation (self, length:int, crossword:list, alowed_values:list):
+    def __make_permutation_all_crosswords (self, length:int, crossword:list, alowed_values:list):
 
         if length == self.required_length:
             word = alowed_values[0]
@@ -43,11 +44,47 @@ class Crossword:
                 exam_results = Crossword.__examine_word(self, word, copy.deepcopy(crossword))
                 if bool(exam_results):
                     for result in exam_results:
-                        Crossword.__make_permutation(self, length, result, alowed_values)
+                        Crossword.__make_permutation_all_crosswords(self, length, result, alowed_values)
                 alowed_values.append(word)
 
+    def generate_one_crossword(self, given_words:list, required_intersections):
+        self.all_crossword = [0, []]
+        self.required_intersections = required_intersections
+        self.required_length = len(given_words)
+        self.to_calculate = True
+        length = 2
+        alowed_values = []
+        for temp in range(self.required_length):
+            new_value = random.choice(given_words)
+            alowed_values.append(new_value)
+            given_words.remove(new_value)
+        for word in alowed_values.copy():
+            if self.to_calculate:
+                array = Crossword.__insert_word(self, word, False, 0, 0, [0, [], {}])
+                alowed_values.remove(word)
+                Crossword.__make_permutation_one_crosswords(self, length, array, alowed_values)
+                alowed_values.append(word)
 
-
+    def __make_permutation_one_crosswords (self, length:int, crossword:list, alowed_values:list):
+        if length == self.required_length and self.to_calculate:
+            word = alowed_values[0]
+            exam_results = Crossword.__examine_word(self, word, copy.deepcopy(crossword))
+            if bool(exam_results):
+                for result in exam_results:
+                    if result[0] > self.required_intersections - 1 and self.to_calculate:
+                        self.all_crossword[0] = result[0]
+                        self.all_crossword[1].append(result.copy())
+                        self.to_calculate = False
+        elif self.to_calculate:
+            length += 1
+            for word in alowed_values.copy():
+                if self.to_calculate:
+                    alowed_values.remove(word)
+                    exam_results = Crossword.__examine_word(self, word, copy.deepcopy(crossword))
+                    if bool(exam_results):
+                        for result in exam_results:
+                            Crossword.__make_permutation_one_crosswords(self, length, result, alowed_values)
+                    alowed_values.append(word)
 
     def __examine_word (self, word:str, crossword:list):
         possible_intersections = {}
@@ -62,8 +99,6 @@ class Crossword:
             if coordinate in crossword[1]:
                 possible_intersections.pop(coordinate)
 
-        #print("Exam 1: " + str (possible_intersections))
-
         for coordinate, letter in possible_intersections.items():
             index = -1
             if ((coordinate[0] - 1, coordinate[1]) in crossword[2].keys()    #EXAM 2
@@ -72,11 +107,8 @@ class Crossword:
             else:
                 direction_vector = False
 
-            #print("Exam 2: " + str(direction_vector))
-
             for count in range(word.count(letter)):                      #EXAM3
                 index = word.index(letter, index + 1)
-                #print("index: " + str(index))
                 approve = True
                 intersections = []
                 if direction_vector:
@@ -89,16 +121,11 @@ class Crossword:
                             temp_coordinate_y += 1
                             continue
                         while approve:
-                            #print(coordinate, str(temp_coordinate_x), str(temp_coordinate_y))
                             if (coordinate[0] + temp_coordinate_x, coordinate[1] - temp_coordinate_y + index) in crossword[2].keys():
-                                #print("1.1 Ok")
                                 if letter == crossword[2][(coordinate[0] + temp_coordinate_x, coordinate[1] - temp_coordinate_y + index)] and temp_coordinate_x == 0:
                                     intersections.append((coordinate[0] + temp_coordinate_x, coordinate[1] - temp_coordinate_y + index))
-                                    print("1.2 Ok")
                                 else:
-                                    print("1.2 NOT")
                                     approve = False
-                                    #print("DisApprove True")
                                     break
                             if temp_coordinate_x == 1:
                                 break
@@ -108,9 +135,9 @@ class Crossword:
                     if (coordinate[0], coordinate[1] + index + 1) in crossword[2].keys() or (coordinate[0], coordinate[1] - len(word) + index) in crossword[2].keys():
                         approve = False
                     if approve:
-                        intersections.append(coordinate)
-                        temp_crossword = crossword.copy()
-                        temp_crossword[1] += intersections.copy()
+                        intersections.append(copy.deepcopy(coordinate))
+                        temp_crossword = copy.deepcopy(crossword)
+                        temp_crossword[1] += copy.deepcopy(intersections)
                         temp_crossword[0] += len(intersections.copy())
                         temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0], coordinate[1] + index, copy.deepcopy(temp_crossword))
                         new_crosswords.append(temp_crossword.copy())
@@ -128,12 +155,9 @@ class Crossword:
                             continue
                         while approve:
                             if (coordinate[0] + temp_coordinate_x - index, coordinate[1] + temp_coordinate_y) in crossword[2].keys():
-                                #print("2.1 OK")
                                 if letter == crossword[2][(coordinate[0] + temp_coordinate_x - index, coordinate[1] + temp_coordinate_y)] and temp_coordinate_y == 0:
-                                    print("2.2 OK")
                                     intersections.append((coordinate[0] + temp_coordinate_x - index, coordinate[1] + temp_coordinate_y))
                                 else:
-                                    print("2.2 NOT")
                                     approve = False
                                     break
                             if temp_coordinate_y == 1:
@@ -144,15 +168,14 @@ class Crossword:
                     if (coordinate[0] - index - 1, coordinate[1]) in crossword[2].keys() or (coordinate[0] + len(word) - index, coordinate[1]) in crossword[2].keys():
                         approve = False
                     if approve:
-                        intersections.append(coordinate)
-                        temp_crossword = crossword.copy()
-                        temp_crossword[1] += intersections.copy()
+                        intersections.append(copy.deepcopy(coordinate))
+                        temp_crossword = copy.deepcopy(crossword)
+                        temp_crossword[1] += copy.deepcopy(intersections)
                         temp_crossword[0] += len(intersections.copy())
                         temp_crossword = Crossword.__insert_word(self, word, direction_vector, coordinate[0] - index, coordinate[1], copy.deepcopy(temp_crossword))
                         new_crosswords.append(temp_crossword.copy())
                     else:
                         continue
-        #print("END")
         return new_crosswords
 
 
@@ -167,15 +190,10 @@ class Crossword:
             add_y = -1
         for letter in word:
             coordinate = (x, y)
-            if coordinate in new_crossword[2].keys() and letter != new_crossword[2][coordinate]:
-                print()
-                print()
-                print("BUG")
             if not(coordinate in new_crossword[2].keys()):
                 new_crossword[2][coordinate] = letter
             x += add_x
             y += add_y
-        #print("WOW: " + str(new_crossword))
         return new_crossword
 
 
@@ -231,14 +249,12 @@ class Crossword:
                 widget.destroy()
 
     def __forward_visual_btncommand(self):
-        print(1)
         if len(self.all_crossword[1]) - 1 > self.shown_index:
             self.shown_index += 1
             self.__clear_frame_crossword_visual()
             self.__create_crossword_structer(self.all_crossword[1][self.shown_index])
 
     def __backward_visual_btncommand(self):
-        print(2)
         if self.shown_index > 0:
             self.shown_index -= 1
             self.__clear_frame_crossword_visual()
@@ -272,7 +288,5 @@ class Crossword:
 
 #crossword_1.create_visualisation()
 
-#print(crossword_1.crossword)
-#print(crossword_1.max_x, crossword_1.max_y, crossword_1.min_x, crossword_1.min_y)
 
 
