@@ -256,9 +256,11 @@ class Crossword:
         self.CreateInterface = CreateInterface(self.all_crosswords)
         self.CreateInterface.create_visualisation()
 
-    def draw_crossword(self):
-        self.Draw = Draw(self.all_crosswords, self.describe)
-        self.Draw.()
+    def draw_crossword(self, zoom_parameter=5):
+        self.Draw = Draw(self.all_crosswords[2], self.describe, zoom_parameter)
+        self.Draw.clear_crossword_image()
+        self.Draw.full_crossword_image()
+        self.Draw.describe_list()
 
 
 
@@ -359,9 +361,9 @@ class CreateInterface:
 
 class Draw:
 
-    def __init__(self, crossword, describe_dict):
+    def __init__(self, crossword, describe_dict, zoom_parameter):
         self.crossword = crossword
-        self.zoom_parameter = 20
+        self.zoom_parameter = zoom_parameter
         self.describe_dict = describe_dict
 
     def clear_crossword_image(self):
@@ -381,7 +383,7 @@ class Draw:
 
         image = self.__add_numbers(image, True)
 
-        image.save('Clear_crossword.png')
+        image.save(r'images\\Clear_crossword.png')
         image.show()
 
     def full_crossword_image(self):
@@ -394,7 +396,7 @@ class Draw:
         image = Image.new("RGB", (width, height), "white")
 
         main_layer = ImageDraw.Draw(image)
-        self.letter_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 15)
+        self.letter_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 15)
         for coordinate, letter in self.crossword[2].items():
             x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
             y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat
@@ -403,7 +405,7 @@ class Draw:
 
         image = self.__add_numbers(image, False)
 
-        image.save('full_crossword.png')
+        image.save(r'images\\full_crossword.png')
         image.show()
 
     def __get_size (self):
@@ -428,9 +430,9 @@ class Draw:
         zoom_parameter = self.zoom_parameter
         numbers = ImageDraw.Draw(image)
         if clear:
-            self.number_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 6)
+            self.number_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 6)
         else:
-            self.number_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 4)
+            self.number_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 4)
         number = 1
         for word, info in self.crossword[3].items():
             x = (info[0][0] - self.min_x) * (zoom_parameter * 14) + zoom_parameter * 10
@@ -456,9 +458,9 @@ class Draw:
         zoom_parameter = self.zoom_parameter
         retreat = zoom_parameter * 10
 
-        self.describe_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 10)
-        self.naming_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 15)
-        self.title_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 25)
+        self.describe_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 10)
+        self.naming_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 15)
+        self.title_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 25)
 
         title_text = 'Опис слів'
         title_verctical_text = 'Вертикальні слова'
@@ -523,5 +525,5 @@ class Draw:
         writing.text((retreat, height_list[3]), text=title_horizontal_text, font=self.naming_font, fill="black")
         writing.text((retreat, height_list[4]), text=horizontal_word_text, font=self.describe_font, fill="black")
 
-        image.save('describe_list.png')
+        image.save(r'images\\describe_list.png')
         image.show()
