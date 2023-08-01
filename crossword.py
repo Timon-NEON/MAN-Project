@@ -2,6 +2,7 @@
 
 from tkinter import *
 from tkinter import font
+from PIL import Image, ImageDraw, ImageFont
 import copy
 import random
 import time
@@ -255,6 +256,10 @@ class Crossword:
         self.CreateInterface = CreateInterface(self.all_crosswords)
         self.CreateInterface.create_visualisation()
 
+    def draw_crossword(self):
+        self.Draw = Draw(self.all_crosswords, self.describe)
+        self.Draw.()
+
 
 
 
@@ -351,3 +356,172 @@ class CreateInterface:
         if self.crossword_visual.children:
             for widget in self.crossword_visual.winfo_children():
                 widget.destroy()
+
+class Draw:
+
+    def __init__(self, crossword, describe_dict):
+        self.crossword = crossword
+        self.zoom_parameter = 20
+        self.describe_dict = describe_dict
+
+    def clear_crossword_image(self):
+        self.__get_size()
+        zoom_parameter = self.zoom_parameter
+        retreat = zoom_parameter * 10
+        square_size = zoom_parameter * 15
+
+        width, height = self.size_x * square_size + 2 * retreat, self.size_y * square_size + 2 * retreat
+        image = Image.new("RGB", (width, height), "white")
+
+        main_layer = ImageDraw.Draw(image)
+        for coordinate, letter in self.crossword[2].items():
+            x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
+            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat
+            main_layer.rectangle([(x, y), (x + square_size, y + square_size)], fill=None, outline="black", width=zoom_parameter + 1)
+
+        image = self.__add_numbers(image, True)
+
+        image.save('Clear_crossword.png')
+        image.show()
+
+    def full_crossword_image(self):
+        self.__get_size()
+        zoom_parameter = self.zoom_parameter
+        retreat = zoom_parameter * 10
+        square_size = zoom_parameter * 15
+
+        width, height = self.size_x * square_size + 2 * retreat, self.size_y * square_size + 2 * retreat
+        image = Image.new("RGB", (width, height), "white")
+
+        main_layer = ImageDraw.Draw(image)
+        self.letter_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 15)
+        for coordinate, letter in self.crossword[2].items():
+            x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
+            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat
+            main_layer.rectangle([(x, y), (x + square_size, y + square_size)], fill=None, outline="black", width=zoom_parameter + 1)
+            main_layer.text((x + zoom_parameter * 4, y - zoom_parameter * 3), text=letter, fill="black", font=self.letter_font)
+
+        image = self.__add_numbers(image, False)
+
+        image.save('full_crossword.png')
+        image.show()
+
+    def __get_size (self):
+        """Auxiliary private function that give max_x, min_x, max_y, min_y coordinate from crossword"""
+
+        self.min_x, self.min_y = float('inf'), float('inf')
+        self.max_x, self.max_y = float('-inf'), float('-inf')
+        for coordinate in self.crossword[2].keys():
+            if coordinate[0] > self.max_x:
+                self.max_x = coordinate[0]
+            if coordinate[0] < self.min_x:
+                self.min_x = coordinate[0]
+            if coordinate[1] > self.max_y:
+                self.max_y = coordinate[1]
+            if coordinate[1] < self.min_y:
+                self.min_y = coordinate[1]
+        self.size_x = self.max_x - self.min_x + 1
+        self.size_y = self.max_y - self.min_y + 1
+
+    def __add_numbers(self, image, clear):
+        self.describe_number = [{}, {}] #1-st list for vertical words, 2-nd list for horizontal words
+        zoom_parameter = self.zoom_parameter
+        numbers = ImageDraw.Draw(image)
+        if clear:
+            self.number_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 6)
+        else:
+            self.number_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 4)
+        number = 1
+        for word, info in self.crossword[3].items():
+            x = (info[0][0] - self.min_x) * (zoom_parameter * 14) + zoom_parameter * 10
+            y = (self.max_y - info[0][1]) * (zoom_parameter * 14) + zoom_parameter * 10
+            vector = info[1]
+            if vector:
+                if info[0] in self.crossword[1]:
+                    numbers.text((x + zoom_parameter * 5, y), text=str(number), fill="black", font=self.number_font)
+                else:
+                    numbers.text((x + zoom_parameter * 2, y), text=str(number), fill="black", font=self.number_font)
+                self.describe_number[0][number] = word
+            else:
+                if info[0] in self.crossword[1]:
+                    numbers.text((x + zoom_parameter * 1, y + zoom_parameter * 3), text=str(number), fill="black", font=self.number_font)
+                else:
+                    numbers.text((x + zoom_parameter * 2, y), text=str(number), fill="black", font=self.number_font)
+                self.describe_number[1][number] = word
+            number += 1
+
+        return image
+
+    def describe_list(self):
+        zoom_parameter = self.zoom_parameter
+        retreat = zoom_parameter * 10
+
+        self.describe_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 10)
+        self.naming_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 15)
+        self.title_font = ImageFont.truetype(r"FuturaPT-Demi.ttf", zoom_parameter * 25)
+
+        title_text = 'Опис слів'
+        title_verctical_text = 'Вертикальні слова'
+        title_horizontal_text = 'Горизонтальні слова'
+        vertical_word_text = ''
+        horizontal_word_text = ''
+
+        for number in range (1, len(self.crossword[3]) + 1):
+            if number in self.describe_number[0]:
+                vertical_word_text += str(number) + '. '
+                describe_list = self.describe_dict[self.describe_number[0][number]].split(' ')
+                for count, word in enumerate(describe_list):
+                    vertical_word_text += word + ' '
+                    if (count + 1) % 3 == 0:
+                        vertical_word_text += '\n'
+                if not (vertical_word_text.endswith('\n')):
+                    vertical_word_text += '\n'
+            else:
+                horizontal_word_text += str(number) + '. '
+                describe_list = self.describe_dict[self.describe_number[1][number]].split(' ')
+                for count, word in enumerate(describe_list):
+                    horizontal_word_text += word + ' '
+                    if (count + 1) % 3 == 0:
+                        horizontal_word_text += '\n'
+                if not(horizontal_word_text.endswith('\n')):
+                    horizontal_word_text += '\n'
+
+        width, height = 2 * retreat, 4 * retreat
+
+        height_list = [height - 3 * retreat]
+        text_size = self.title_font.getsize(title_text)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        height_list.append(height - 2 * retreat)
+        text_size = self.naming_font.getsize(title_verctical_text)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        height_list.append(height - 2 * retreat)
+        text_size = self.describe_font.getsize_multiline(vertical_word_text)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        height_list.append(height - 1 * retreat)
+        text_size = self.naming_font.getsize(title_horizontal_text)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        height_list.append(height - 1 * retreat)
+        text_size = self.describe_font.getsize_multiline(horizontal_word_text)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        image = Image.new("RGB", (width, height), "white")
+
+        writing = ImageDraw.Draw(image)
+
+        writing.text((retreat, height_list[0]), text=title_text, font=self.title_font, fill="black")
+        writing.text((retreat, height_list[1]), text=title_verctical_text, font=self.naming_font, fill="black")
+        writing.text((retreat, height_list[2]), text=vertical_word_text, font=self.describe_font, fill="black")
+        writing.text((retreat, height_list[3]), text=title_horizontal_text, font=self.naming_font, fill="black")
+        writing.text((retreat, height_list[4]), text=horizontal_word_text, font=self.describe_font, fill="black")
+
+        image.save('describe_list.png')
+        image.show()
