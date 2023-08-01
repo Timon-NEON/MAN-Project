@@ -257,8 +257,8 @@ class Crossword:
         self.CreateInterface.create_visualisation()
 
     def draw_crossword(self):
-        self.DrawCrossword = DrawCrossword(self.all_crosswords, self.describe)
-        self.DrawCrossword.()
+        self.Draw = Draw(self.all_crosswords, self.describe)
+        self.Draw.()
 
 
 
@@ -357,7 +357,7 @@ class CreateInterface:
             for widget in self.crossword_visual.winfo_children():
                 widget.destroy()
 
-class DrawCrossword:
+class Draw:
 
     def __init__(self, crossword, describe_dict):
         self.crossword = crossword
