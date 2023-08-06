@@ -3,6 +3,8 @@
 from tkinter import *
 from tkinter import font
 from PIL import Image, ImageDraw, ImageFont
+from pypdf import PdfReader
+import os
 import copy
 import random
 import time
@@ -17,25 +19,28 @@ class Crossword:
         self.all_crosswords = [[], []]
         self.best_crossword = []
 
-    def generate(self, required_options):
+    def generate(self, required_options:int = -1, number_uses_word:int = -1):
         self.Generate = Generate(self.describe)
-        self.Generate.generate_one_crossword(required_options)
+        self.Generate.generate_one_crossword(required_options, number_uses_word)
         self.all_crosswords = self.Generate.all_crosswords[1:3]
-        print(self.all_crosswords)
         self.best_crossword = self.all_crosswords[1]
-        print(self.all_crosswords)
-        print()
-        print(self.best_crossword)
 
     def create_window(self):
         self.CreateInterface = CreateInterface([self.best_crossword])
         self.CreateInterface.create_visualisation()
 
-    def draw_crossword(self, zoom_parameter=5):
+    def draw(self, zoom_parameter=5):
         self.Draw = Draw(self.best_crossword, self.describe, zoom_parameter)
         self.Draw.clear_crossword_image()
         self.Draw.full_crossword_image()
         self.Draw.describe_list()
+
+    def read_file(self, file_path:str, sign):
+        self.Read_text = ReadText(file_path, sign)
+        if file_path.endswith('.txt'):
+            self.describe = self.Read_text.read_txt()
+        elif file_path.endswith('.pdf'):
+            self.describe = self.Read_text.read_pdf()
 
 
 class Generate:
@@ -44,28 +49,39 @@ class Generate:
         self.describe = describe
         self.all_crosswords = [0, [], {}, {}]
 
-    def generate_one_crossword(self, required_options: int):
+    def generate_one_crossword(self, required_options:int = -1, number_uses_word:int = -1):
         """Main public function that make preparing and start generate for one variant of crossword"""
-        given_words = list(self.describe.keys())
+        #if number_uses_word > 50: number_uses_word = 50 !   CHANG IT    !
+        if number_uses_word > len(self.describe.keys()) or number_uses_word == -1: number_uses_word = len(self.describe.keys())
+        if required_options == -1: required_options = 300
+
+        used_words = []
+        all_words = list(self.describe.keys())
+        for temp in range(number_uses_word):
+            new_value = random.choice(all_words)
+            used_words.append(new_value)
+            all_words.remove(new_value)
         self.all_crosswords = [0,
                                []]  # main list that keeps 2 values: 1st (int value) shows maximum naumber of intersections, 2nd (list value) keeps all crosswords that have intersections value that is equal to 1st value of self.all_crosswords
         self.required_options = required_options  # parameter keeps number of required options of crossword for searching best variant
         self.required_length = len(
-            given_words)  # preparing of the parametr of required length of crossword for permutation function
+            used_words)  # preparing of the parametr of required length of crossword for permutation function
+
+        print('Слова, з яких буде складатися кросворд:', used_words)
 
         start_time = time.time()
         for i in range(self.required_options):
-            if time.time() - start_time < 10:
+            if 0 < number_uses_word: #!   CHANG IT    ! time.time() - start_time
                 self.to_calculate = True  # preparing of boolean parametr for permutation function which determines whether the program still need to look for acceptable variant of crossword
                 length = 2  # preparing of length parametr of crossword for permutation function
                 alowed_values = []  # list that keeps words that should be added to crossword
-                given_words = list(self.describe.keys())
+                used_words_copy = used_words.copy()
 
                 for temp in range(
                         self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
-                    new_value = random.choice(given_words)
+                    new_value = random.choice(used_words_copy)
                     alowed_values.append(new_value)
-                    given_words.remove(new_value)
+                    used_words_copy.remove(new_value)
 
                 for word in alowed_values.copy():  # start permutation
                     if self.to_calculate:
@@ -73,6 +89,7 @@ class Generate:
                         alowed_values.remove(word)
                         Generate.__make_permutation_one_crosswords(self, length, array, alowed_values)
                         alowed_values.append(word)
+                print(i, '-ий варіант прорахован')
             else:
                 break
         # analysis
@@ -80,7 +97,9 @@ class Generate:
             points = self.__get_size_point(self.all_crosswords[1][count])
             self.all_crosswords[1][count].append(points)
             if count != 0:
-                if points < self.all_crosswords[2][4]:
+                if self.all_crosswords[1][count][0] > self.all_crosswords[2][0]:
+                    self.all_crosswords[2] = self.all_crosswords[1][count]
+                elif points < self.all_crosswords[2][4] and self.all_crosswords[1][count][0] == self.all_crosswords[2][0]:
                     self.all_crosswords[2] = self.all_crosswords[1][count]
             else:
                 self.all_crosswords.append(self.all_crosswords[1][count])
@@ -356,6 +375,10 @@ class Draw:
     def __init__(self, crossword, describe_dict, zoom_parameter):
         self.crossword = crossword
         self.zoom_parameter = zoom_parameter
+        #if zoom_parameter < 4: !   CHANG IT    !
+        #    self.zoom_parameter = 4
+        #else:
+        #    self.zoom_parameter = zoom_parameter
         self.describe_dict = describe_dict
 
     def clear_crossword_image(self):
@@ -375,6 +398,7 @@ class Draw:
 
         image = self.__add_numbers(image, True)
 
+        os.makedirs('images', exist_ok=True)
         image.save(r'images\\Clear_crossword.png')
         image.show()
 
@@ -397,6 +421,7 @@ class Draw:
 
         image = self.__add_numbers(image, False)
 
+        os.makedirs('images', exist_ok=True)
         image.save(r'images\\full_crossword.png')
         image.show()
 
@@ -519,3 +544,97 @@ class Draw:
 
         image.save(r'images\\describe_list.png')
         image.show()
+
+class ReadText:
+
+    def __init__(self, fale_path, sign):
+        self.file_path = fale_path
+        self.sign = sign
+        self.end_symbols = ['.', ';', '!', '?']
+        self.describe = {}
+
+    def read_txt(self):
+        self.file = open(self.file_path, 'r', encoding='UTF-8')
+
+        self.__text_checking(self.file.read())
+        self.__filtration()
+
+        self.file.close()
+        return self.describe
+
+    def read_pdf(self):
+        file = PdfReader(self.file_path)
+        text = ''
+
+        for index in range(len(file.pages)):
+            text += file.pages[index].extract_text()
+
+        self.__text_checking(text)
+        self.__filtration()
+
+        return self.describe
+
+    def __text_checking(self, text):
+
+        text_list = text.split()
+
+        index = 0
+        if self.sign in text_list:
+            for temp in range(text_list.count(self.sign)):
+
+                index = text_list.index(self.sign, index + 1)
+                if text_list[index + 1][len(text_list[index + 1]) - 1] in self.end_symbols and not(text_list[index - 1][len(text_list[index - 1]) - 1] in self.end_symbols):
+                    word = text_list[index + 1][:len(text_list[index + 1]) - 1].lower()
+                    temp_index = index - 1
+                    while temp_index != -1:
+                        if text_list[temp_index][len(text_list[temp_index]) - 1] in self.end_symbols:
+                            break
+                        else:
+                            temp_index -= 1
+                    description = text_list[temp_index + 1:index]
+                    description[0] = description[0][0].upper() + description[0][1:len(description[0])]
+                    description = ' '.join(description)
+                    self.describe[word] = description
+                elif index > 1:
+                    if text_list[index - 2][len(text_list[index - 2]) - 1] in self.end_symbols:
+                        word = text_list[index - 1].lower()
+                        temp_index = index + 1
+                        while temp_index != len(text_list):
+                            if text_list[temp_index][len(text_list[temp_index]) - 1] in self.end_symbols:
+                                break
+                            else:
+                                temp_index += 1
+                        description = text_list[index + 1:temp_index + 1]
+                        description[0] = description[0][0].upper() + description[0][1:len(description[0])]
+                        description[len(description) - 1] = description[len(description) - 1][
+                                                            0:len(description[len(description) - 1]) - 1]
+                        description = ' '.join(description)
+                        self.describe[word] = description
+                elif index > 0:
+                    word = text_list[0].lower()
+                    temp_index = index + 1
+                    while temp_index != len(text_list):
+                        if text_list[temp_index][len(text_list[temp_index]) - 1] in self.end_symbols:
+                            break
+                        else:
+                            temp_index += 1
+                    description = text_list[index + 1:temp_index + 1]
+                    description[0] = description[0][0].upper() + description[0][1:len(description[0])]
+                    description[len(description) - 1] = description[len(description) - 1][
+                                                        0:len(description[len(description) - 1]) - 1]
+                    description = ' '.join(description)
+                    self.describe[word] = description
+
+    def __filtration(self):
+        self.min_length = 4
+
+        for word in self.describe.copy().keys():
+            if len(word) < self.min_length:
+                self.describe.pop(word)
+
+
+
+
+
+
+
