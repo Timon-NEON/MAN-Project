@@ -2,41 +2,38 @@ import unittest
 import time
 from crossword import Crossword
 
-word = ''
-describe = ''
-crossword = Crossword()
+start_time = time.time() #початок прорахування часу
 
-#while True:
-#    word = input()
-#    describe = input()
-#    if word == 'q':
-#        break
-#    else:
-#        crossword.describe[word] = describe
-#        print(crossword.describe)
+crossword = Crossword() #створення об'єкту класу Crossword
 
+#Наповнити об'єкт словами і їх описом можна двома способами.
+#   1. Через зчитування файлу. 1-ий параметр це назва файлу. 2-ий це знак, який відкоремлює слово від його опису
+#       Приклад структури є в файлі source.txt
+#crossword.read_file('source.txt', '—')
+
+#   2. Через пряме заповнення словнику, в якому зберігається слова та його опис.
+#       Структура: слово : опис
 crossword.describe = {"тригонометрія": "наука, про трикутники", "матаналіз": "наука про аналіз даних", "алгебра": "наука про обчислювання", "логіка":"мистецтво думати", "комбінаторика":"наука про випадки", "топологія":"наука про просторове уявлення", "статистика":"наука про вивчення процесів"}
 
+#Треба використовувати лише один з цих способів наповнення кросворда словами.
 
-start_time = time.time()
+
+#Генерація кросвордів.
+#В першому параметрі зазначається кількість необхідних генерацій варіантів.
+#В другому параметрі зазначається кількість слів, з яких ви хочете створити кросворд.
+#(другий параметр корисний, коли в файлі знайшли багато слів і не з усією кільікістю хочете робити кросворд)
+crossword.generate(1500, 10)
+#У цій версії я прибрав усі обмеження щодо часу і кількості слів. Тому можна проводити важкі експеременти.
 
 
-crossword.generate_one_crossword(1500)
-
-#crossword.generate_all_crosswords(["молоко", "свиня", "яблоко"])
-
-end_time = time.time()
-
-#print (crossword.all_crosswords)
-#for i in crossword.all_crosswords[1]:
-#    print(i)
-#print(len(crossword.all_crosswords[1]))
-#print(round(end_time - start_time, 2))
-
-#crossword.create_window()
-
-#crossword.CreateInterface.create_visualisation()
-crossword.all_crosswords[1] = [crossword.all_crosswords[2]]
-print(crossword.all_crosswords[2])
-print(crossword.describe)
+#Генерує вікно з кросвордом на основі бібліотеці tkinter
 crossword.create_window()
+
+
+#Малює 3 зображення: порожній кросворд, з відповідями та з описом слів.
+#Параметр відповідає за розмір картинок (рекомандований розмір: від 4)
+crossword.draw(15)
+
+end_time = time.time() #кінець прорахування часу
+
+print("Час виконання програми: ", round(end_time - start_time, 2))
