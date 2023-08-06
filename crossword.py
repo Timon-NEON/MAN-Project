@@ -276,6 +276,19 @@ class Generate:
         size_point = ((size_x + size_y) / 2) * ((max(size_x, size_y) ** (1 / 4)) / (min(size_x, size_y) ** (1 / 4)))
         return size_point
 
+    def create_window(self):
+        self.CreateInterface = CreateInterface(self.all_crosswords)
+        self.CreateInterface.create_visualisation()
+
+    def draw_crossword(self, zoom_parameter=5):
+        self.Draw = Draw(self.all_crosswords[2], self.describe, zoom_parameter)
+        self.Draw.clear_crossword_image()
+        self.Draw.full_crossword_image()
+        self.Draw.describe_list()
+
+
+
+
 class CreateInterface:
 
     def __init__(self, all_crosswords):
