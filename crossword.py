@@ -3,7 +3,7 @@
 from tkinter import *
 from tkinter import font
 from PIL import Image, ImageDraw, ImageFont
-from pypdf import PdfReader
+#from pypdf import PdfReader
 import os
 import copy
 import random
@@ -19,9 +19,9 @@ class Crossword:
         self.all_crosswords = [[], []]
         self.best_crossword = []
 
-    def generate(self, required_options:int = -1, number_uses_word:int = -1):
+    def generate(self, generation_time:int = -1, number_used_word:int = -1):
         self.Generate = Generate(self.describe)
-        self.Generate.generate_one_crossword(required_options, number_uses_word)
+        self.Generate.generate_one_crossword(generation_time, number_used_word)
         self.all_crosswords = self.Generate.all_crosswords[1:3]
         self.best_crossword = self.all_crosswords[1]
 
@@ -49,47 +49,43 @@ class Generate:
         self.describe = describe
         self.all_crosswords = [0, [], {}, {}]
 
-    def generate_one_crossword(self, required_options:int = -1, number_uses_word:int = -1):
+    def generate_one_crossword(self, generation_time:int = -1, number_used_word:int = -1):
         """Main public function that make preparing and start generate for one variant of crossword"""
-        #if number_uses_word > 50: number_uses_word = 50 !   CHANG IT    !
-        if number_uses_word > len(self.describe.keys()) or number_uses_word == -1: number_uses_word = len(self.describe.keys())
-        if required_options == -1: required_options = 300
+        #if number_used_word > 50: number_used_word = 50 !   CHANG IT    !
+        if number_used_word > len(self.describe.keys()) or number_used_word == -1: number_used_word = len(self.describe.keys())
+        if generation_time == -1: generation_time = 30
 
         used_words = []
         all_words = list(self.describe.keys())
-        for temp in range(number_uses_word):
+        for temp in range(number_used_word):
             new_value = random.choice(all_words)
             used_words.append(new_value)
             all_words.remove(new_value)
         self.all_crosswords = [0,
                                []]  # main list that keeps 2 values: 1st (int value) shows maximum naumber of intersections, 2nd (list value) keeps all crosswords that have intersections value that is equal to 1st value of self.all_crosswords
-        self.required_options = required_options  # parameter keeps number of required options of crossword for searching best variant
+        self.generation_time = time.time() + generation_time  # parameter keeps time of generation of crossword for searching best variant
         self.required_length = len(
             used_words)  # preparing of the parametr of required length of crossword for permutation function
 
         print('Слова, з яких буде складатися кросворд:', used_words)
 
         start_time = time.time()
-        for i in range(self.required_options):
-            if 0 < number_uses_word: #!   CHANG IT    ! time.time() - start_time
-                self.to_calculate = True  # preparing of boolean parametr for permutation function which determines whether the program still need to look for acceptable variant of crossword
+        while (self.generation_time > time.time()):
+            if 0 < number_used_word: #!   CHANG IT    ! time.time() - start_time
                 length = 2  # preparing of length parametr of crossword for permutation function
                 alowed_values = []  # list that keeps words that should be added to crossword
                 used_words_copy = used_words.copy()
 
-                for temp in range(
-                        self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
+                for temp in range(self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
                     new_value = random.choice(used_words_copy)
                     alowed_values.append(new_value)
                     used_words_copy.remove(new_value)
 
                 for word in alowed_values.copy():  # start permutation
-                    if self.to_calculate:
-                        array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
-                        alowed_values.remove(word)
-                        Generate.__make_permutation_one_crosswords(self, length, array, alowed_values)
-                        alowed_values.append(word)
-                print(i, '-ий варіант прорахован')
+                    array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
+                    alowed_values.remove(word)
+                    Generate.__make_permutation_one_crosswords(self, length, array, alowed_values)
+                    alowed_values.append(word)
             else:
                 break
         # analysis
@@ -107,20 +103,18 @@ class Generate:
     def __make_permutation_one_crosswords(self, length: int, crossword: list, alowed_values: list):
         """Recursive private function that generate one variant of crossword"""
 
-        if length == self.required_length and self.to_calculate:  # checking that the crossword is almost done and whether the program still need to look for acceptable variant of crossword
+        if length == self.required_length and self.generation_time > time.time():  # checking that the crossword is almost done and whether the program still need to look for acceptable variant of crossword
             word = alowed_values[0]
             exam_results = Generate.__examine_word(self, word, copy.deepcopy(
                 crossword))  # checking that word can be added to crossword
             if bool(exam_results):  # checking that list keeps values (it can be empty)
                 for result in exam_results:
-                    if self.to_calculate:
-                        self.all_crosswords[0] = result[0]
-                        self.all_crosswords[1].append(result.copy())
-                        self.to_calculate = False  # change search status
-        elif self.to_calculate:  # checking whether the program still need to look for acceptable variant of crossword
+                    self.all_crosswords[0] = result[0]
+                    self.all_crosswords[1].append(result.copy())
+        elif self.generation_time > time.time():  # checking whether the program still need to look for acceptable variant of crossword
             length += 1
             for word in alowed_values.copy():  # adding to crossword words from alowed_values
-                if self.to_calculate:
+                if self.generation_time > time.time():
                     alowed_values.remove(word)
                     exam_results = Generate.__examine_word(self, word, copy.deepcopy(crossword))
                     if bool(exam_results):  # checking that list keeps values (it can be empty)
@@ -578,7 +572,6 @@ class ReadText:
     def read_pdf(self):
         file = PdfReader(self.file_path)
         text = ''
-
         for index in range(len(file.pages)):
             text += file.pages[index].extract_text()
 
