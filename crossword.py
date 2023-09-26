@@ -16,6 +16,7 @@ class Crossword:
 
     def __init__(self):
         self.describe = {}
+        self.name = ""
         self.all_crosswords = [[], []]
         self.best_crossword = []
 
@@ -30,7 +31,7 @@ class Crossword:
         self.CreateInterface.create_visualisation()
 
     def draw(self, zoom_parameter=5):
-        self.Draw = Draw(self.best_crossword, self.describe, zoom_parameter)
+        self.Draw = Draw(self.best_crossword, self.describe, zoom_parameter, self.name)
         self.Draw.clear_crossword_image()
         self.Draw.full_crossword_image()
         self.Draw.describe_list()
@@ -379,14 +380,22 @@ class CreateInterface:
 
 class Draw:
 
-    def __init__(self, crossword, describe_dict, zoom_parameter):
+    def __init__(self, crossword, describe_dict, zoom_parameter, name):
         self.crossword = crossword
-        self.zoom_parameter = zoom_parameter
-        #if zoom_parameter < 4: !   CHANG IT    !
-        #    self.zoom_parameter = 4
-        #else:
-        #    self.zoom_parameter = zoom_parameter
+        #self.zoom_parameter = zoom_parameter
+        if zoom_parameter < 4: self.zoom_parameter = 4
+        else: self.zoom_parameter = zoom_parameter
         self.describe_dict = describe_dict
+        self.name = name
+        self.name_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 18)
+        
+        name = ''
+        for count, word in enumerate(self.name.split()):
+            if (count) % 2 == 0 and count != 0:
+                name += '\n'
+            name += word + ' '
+        self.name = name
+
 
     def clear_crossword_image(self):
         self.__get_size()
@@ -394,19 +403,25 @@ class Draw:
         retreat = zoom_parameter * 10
         square_size = zoom_parameter * 15
 
-        width, height = self.size_x * square_size + 2 * retreat, self.size_y * square_size + 2 * retreat
+        text_size = self.name_font.getsize_multiline(self.name)
+        title_width = text_size[0] + 2 * retreat
+        height_title = text_size[1] + 2 * retreat
+
+        width, height = max(self.size_x * square_size + 2 * retreat, title_width), self.size_y * square_size + 2 * retreat + height_title
         image = Image.new("RGB", (width, height), "white")
 
         main_layer = ImageDraw.Draw(image)
+        main_layer.text((retreat, retreat), text=self.name, font=self.name_font, fill="black")
+        
         for coordinate, letter in self.crossword[2].items():
             x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
-            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat
+            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat + height_title
             main_layer.rectangle([(x, y), (x + square_size, y + square_size)], fill=None, outline="black", width=zoom_parameter + 1)
 
-        image = self.__add_numbers(image, True)
+        image = self.__add_numbers(image, True, height_title)
 
-        os.makedirs('images', exist_ok=True)
-        image.save(r'images\\Clear_crossword.png')
+        os.makedirs('/home/timon/Github/crossword_test/MAN-Project/images', exist_ok=True)
+        image.save('/home/timon/Github/crossword_test/MAN-Project/images/Clear_crossword.png')
         image.show()
 
     def full_crossword_image(self):
@@ -415,21 +430,27 @@ class Draw:
         retreat = zoom_parameter * 10
         square_size = zoom_parameter * 15
 
-        width, height = self.size_x * square_size + 2 * retreat, self.size_y * square_size + 2 * retreat
+        text_size = self.name_font.getsize_multiline(self.name)
+        title_width = text_size[0] + 2 * retreat
+        height_title = text_size[1] + 2 * retreat
+
+        width, height = max(self.size_x * square_size + 2 * retreat, title_width), self.size_y * square_size + 2 * retreat + height_title
         image = Image.new("RGB", (width, height), "white")
 
         main_layer = ImageDraw.Draw(image)
-        self.letter_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 15)
+        main_layer.text((retreat, retreat), text=self.name, font=self.name_font, fill="black")
+        
+        self.letter_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 15)
         for coordinate, letter in self.crossword[2].items():
             x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
-            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat
+            y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat + height_title
             main_layer.rectangle([(x, y), (x + square_size, y + square_size)], fill=None, outline="black", width=zoom_parameter + 1)
             main_layer.text((x + zoom_parameter * 4, y - zoom_parameter * 3), text=letter, fill="black", font=self.letter_font)
 
-        image = self.__add_numbers(image, False)
+        image = self.__add_numbers(image, False, height_title)
 
-        os.makedirs('images', exist_ok=True)
-        image.save(r'images\\full_crossword.png')
+        os.makedirs('/home/timon/Github/crossword_test/MAN-Project/images', exist_ok=True)
+        image.save('/home/timon/Github/crossword_test/MAN-Project/images/full_crossword.png')
         image.show()
 
     def __get_size (self):
@@ -449,18 +470,18 @@ class Draw:
         self.size_x = self.max_x - self.min_x + 1
         self.size_y = self.max_y - self.min_y + 1
 
-    def __add_numbers(self, image, clear):
+    def __add_numbers(self, image, clear, add_height):
         self.describe_number = [{}, {}] #1-st list for vertical words, 2-nd list for horizontal words
         zoom_parameter = self.zoom_parameter
         numbers = ImageDraw.Draw(image)
         if clear:
-            self.number_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 6)
+            self.number_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 6)
         else:
-            self.number_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 4)
+            self.number_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 4)
         number = 1
         for word, info in self.crossword[3].items():
             x = (info[0][0] - self.min_x) * (zoom_parameter * 14) + zoom_parameter * 10
-            y = (self.max_y - info[0][1]) * (zoom_parameter * 14) + zoom_parameter * 10
+            y = (self.max_y - info[0][1]) * (zoom_parameter * 14) + zoom_parameter * 10 + add_height
             vector = info[1]
             if vector:
                 if info[0] in self.crossword[1]:
@@ -482,10 +503,10 @@ class Draw:
         zoom_parameter = self.zoom_parameter
         retreat = zoom_parameter * 10
 
-        self.describe_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 10)
-        self.naming_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 15)
-        self.title_font = ImageFont.truetype(r"helpfull_files\\FuturaPT-Demi.ttf", zoom_parameter * 25)
-
+        self.describe_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 10)
+        self.naming_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 12)
+        self.title_font = ImageFont.truetype("/home/timon/Github/crossword_test/MAN-Project/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 15)
+        
         title_text = 'Опис слів'
         title_verctical_text = 'Вертикальні слова'
         title_horizontal_text = 'Горизонтальні слова'
@@ -498,7 +519,7 @@ class Draw:
                 describe_list = self.describe_dict[self.describe_number[0][number]].split(' ')
                 for count, word in enumerate(describe_list):
                     vertical_word_text += word + ' '
-                    if (count + 1) % 3 == 0:
+                    if (count + 1) % 4 == 0:
                         vertical_word_text += '\n'
                 if not (vertical_word_text.endswith('\n')):
                     vertical_word_text += '\n'
@@ -507,7 +528,7 @@ class Draw:
                 describe_list = self.describe_dict[self.describe_number[1][number]].split(' ')
                 for count, word in enumerate(describe_list):
                     horizontal_word_text += word + ' '
-                    if (count + 1) % 3 == 0:
+                    if (count + 1) % 4 == 0:
                         horizontal_word_text += '\n'
                 if not(horizontal_word_text.endswith('\n')):
                     horizontal_word_text += '\n'
@@ -515,16 +536,21 @@ class Draw:
         width, height = 2 * retreat, 4 * retreat
 
         height_list = [height - 3 * retreat]
+        text_size = self.name_font.getsize_multiline(self.name)
+        width = max(text_size[0] + 2 * retreat, width)
+        height += text_size[1]
+
+        height_list.append(height - 2 * retreat)
         text_size = self.title_font.getsize(title_text)
         width = max(text_size[0] + 2 * retreat, width)
         height += text_size[1]
 
-        height_list.append(height - 2 * retreat)
+        height_list.append(height - 1 * retreat)
         text_size = self.naming_font.getsize(title_verctical_text)
         width = max(text_size[0] + 2 * retreat, width)
         height += text_size[1]
 
-        height_list.append(height - 2 * retreat)
+        height_list.append(height - 1 * retreat)
         text_size = self.describe_font.getsize_multiline(vertical_word_text)
         width = max(text_size[0] + 2 * retreat, width)
         height += text_size[1]
@@ -543,13 +569,14 @@ class Draw:
 
         writing = ImageDraw.Draw(image)
 
-        writing.text((retreat, height_list[0]), text=title_text, font=self.title_font, fill="black")
-        writing.text((retreat, height_list[1]), text=title_verctical_text, font=self.naming_font, fill="black")
-        writing.text((retreat, height_list[2]), text=vertical_word_text, font=self.describe_font, fill="black")
-        writing.text((retreat, height_list[3]), text=title_horizontal_text, font=self.naming_font, fill="black")
-        writing.text((retreat, height_list[4]), text=horizontal_word_text, font=self.describe_font, fill="black")
+        writing.text((retreat, height_list[0]), text=self.name, font=self.name_font, fill="black")
+        writing.text((retreat, height_list[1]), text=title_text, font=self.title_font, fill="black")
+        writing.text((retreat, height_list[2]), text=title_verctical_text, font=self.naming_font, fill="black")
+        writing.text((retreat, height_list[3]), text=vertical_word_text, font=self.describe_font, fill="black")
+        writing.text((retreat, height_list[4]), text=title_horizontal_text, font=self.naming_font, fill="black")
+        writing.text((retreat, height_list[5]), text=horizontal_word_text, font=self.describe_font, fill="black")
 
-        image.save(r'images\\describe_list.png')
+        image.save('/home/timon/Github/crossword_test/MAN-Project/images/describe_list.png')
         image.show()
 
 class ReadText:
