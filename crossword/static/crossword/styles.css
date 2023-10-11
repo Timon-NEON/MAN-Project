@@ -1,0 +1,16 @@
+form textarea {
+    max-width: 400px;
+}
+
+.main-div {
+    margin: 1% 2% 1% 2%;
+    padding: 1% 2% 1% 2%;
+}
+
+.demo_image {
+    width: 200;
+}
+
+.solid-board {
+    border-style: solid;
+}
