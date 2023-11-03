@@ -1,0 +1,53 @@
+{% extends 'crossword/layout.html' %}
+{% load static %}
+
+{% block body %}
+    <div>
+        <h1>
+            Search crossword!
+        </h1>
+    </div>
+
+    <div>
+        <ol type="1" start="{{ start_value }}">
+            {% for info in name_link %}
+                <li id="block_search">
+                    <a href="/crossword/{{ info.link }}">{{ info.name }}</a>
+                </li>
+            {% endfor %}
+                
+        </ol>
+        
+
+    </div>
+    <div>
+        <div>
+            {% if page == 0 %}
+                <form action="">
+                    {% csrf_token %}
+                    <input type="submit" value="◀️">
+                </form>
+            {% else %}
+            <form action="/search_backward/{{ link }}">
+                {% csrf_token %}
+                <input type="submit" value="◀️">
+            </form>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if page == max_page %}
+                <form action="">
+                    {% csrf_token %}
+                    <input type="submit" value="▶️">
+                </form>
+            {% else %}
+            <form action="/search_forward/{{ link }}">
+                {% csrf_token %}
+                <input type="submit" value="▶️">
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock %}

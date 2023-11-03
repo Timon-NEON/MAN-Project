@@ -14,3 +14,19 @@ form textarea {
 .solid-board {
     border-style: solid;
 }
+
+input:disabled {
+    color: #000000;
+    }
+
+textarea:disabled {
+    color: #000000;
+    }
+
+#block_search:link{
+    color: rgb(10, 10, 9);
+}
+
+#block_search:visited{
+    color: rgb(48, 48, 43);
+}

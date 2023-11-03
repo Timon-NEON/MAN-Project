@@ -6,6 +6,9 @@
         <h1>
             Create your crossword!
         </h1>
+        {% if user.is_authenticated %}
+            <h2>Hello {{user.username}} </h2>
+        {% endif %}
     </div>
     <div>
         <form action="{% url 'main:generate' %}" method="post">
@@ -23,6 +26,12 @@
                 <input type="submit" value="Create!">
             {% endif %}
         </form>
+    </div>
+
+    <div>
+        {% if error %}
+            <h3>{{ error }}</h3>
+        {% endif %}
     </div>
 
     <div>
@@ -46,11 +55,27 @@
 
     <div>
         {% if draw_form %}
-            <form action="{% url 'main:draw' %}" method="get">
-                {% csrf_token %}
-                {{ draw_form }}
-                <input type="submit" value="Draw">
-            </form>
+            <div>
+                <form action="{% url 'main:draw' 'index' %}" method="get">
+                    {% csrf_token %}
+                    {{ draw_form }}
+                    <input type="submit" value="Draw">
+                </form>
+            </div>
+
+            <div>
+                <form action="{% url 'main:post' %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Post">
+                </form>
+            </div>
+
+            <div>
+                <form action="{% url 'main:ask_search' 'ask=~~page=0' %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Test_button">
+                </form>
+            </div>
         {% endif %}
     </div>
 
