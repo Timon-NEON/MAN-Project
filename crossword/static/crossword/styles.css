@@ -7,6 +7,11 @@ form textarea {
     padding: 1% 2% 1% 2%;
 }
 
+.search-line {
+    margin: 1% 2% 1% 2%;
+    padding: 0% 1% 0% 3%;
+}
+
 .demo_image {
     width: 200;
 }

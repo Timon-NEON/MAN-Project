@@ -5,9 +5,10 @@ class Crosswords(models.Model):
     crossword = models.CharField(max_length=131072)
     describe = models.CharField(max_length=131072)
     link = models.CharField(max_length=64, unique=True)
-    crator_id = models.IntegerField()
-    status = models.IntegerField()
-    lang = models.CharField(max_length=25)
+    creator_id = models.IntegerField()
+    posting_time = models.IntegerField(default=0)
+    status = models.CharField(max_length=1)
+    language = models.CharField(max_length=25)
     
 
 class Users(models.Model):

@@ -1,0 +1,23 @@
+{% extends 'crossword/layout.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+    <link href="{% static 'crossword/styles.css' %}" rel="stylesheet">
+    <div>
+        <h1>Registration!</h1>
+    </div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Join now</legend>
+            {{ form|crispy }}   
+        </fieldset>
+
+        <div>
+            <button>Sign up</button>
+        </div>
+    </form>
+
+{% endblock %}

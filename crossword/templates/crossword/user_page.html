@@ -1,0 +1,22 @@
+{% extends 'crossword/layout.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+    <div>
+        <h1>{{ username }}</h1>
+    </div>
+    <div>
+        <ul>
+            <li><p>Username: {{ username }}</p></li>
+            <li><p>First name: {{ user_data.first_name }}</p></li>
+            <li><p>Secong name: {{ user_data.second_name }}</p></li>
+            <li><p>With us since: {{ user_data.sign_up_time }}</p></li>
+        </ul>
+    </div>
+    <div>
+        <h3>
+            <a href="/search/creator={{ username }}~~page=0">Show creator's croswwords</a>
+        </h3>
+    </div>
+{% endblock %}

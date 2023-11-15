@@ -2,9 +2,10 @@
 {% load static %}
 
 {% block body %}
+    {% if user_status == '0' %}
     <div>
         <h1>
-            {{ name }}
+            {{ crossword_name }}
         </h1>
     </div>
     <div>
@@ -18,6 +19,13 @@
             <input type="submit" value="Remaking!">
         </form>
     </div>
+
+    {% if is_owner %}
+        <form action="{% url 'main:delete' crossword_link %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Delete">
+        </form>
+    {% endif %}
 
     <div>
         <h4>Here demo</h4>
@@ -45,6 +53,40 @@
         <button id="download-images">Завантажити зображення</button>
         {% endif %}
     </div>
+
+    {% else %}
+        <div>
+            <h1>
+                {{ crossword_name }}
+            </h1>
+        </div>
+
+        <div>
+            <h4>Here demo</h4>
+            <br>
+            <div class="demo-image">
+                <img width="400" src="/media/images/clear_crossword_{{ show_demo }}.png" alt="demo crossword">
+            </div>
+        </div>
+
+        <div>
+            {% if draw_form %}
+                <form action="{% url 'main:draw' 'demo' %}" method="get">
+                    {% csrf_token %}
+                    {{ draw_form }}
+                    <input type="submit" value="Draw">
+                </form>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if download %}
+            <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;">
+            <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;">
+            <button id="download-images">Завантажити зображення</button>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <script>
         const button = document.getElementById("download-images");

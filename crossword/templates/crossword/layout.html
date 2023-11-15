@@ -17,7 +17,7 @@
           
                   <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
-                    <li><a href="/search/ask=~~page=0" class="nav-link px-2 text-white">Search</a></li>
+                    <li><a href="/search/page=0" class="nav-link px-2 text-white">Search</a></li>
                   </ul>
           
                   <!--<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -26,12 +26,13 @@
           
                   <div class="text-end">
                     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                      <li><a href="{% url 'main:test' %}" class="nav-link px-2 text-white">Test</a></li>
                       {% if user.is_authenticated %}
                         <li><a href="{% url 'main:logout' %}" class="nav-link px-2 text-white">Logout</a></li>
                         <li><a href="/user/{{ user.username }}" class="nav-link px-2 text-white">{{ user.username }}</a></li>
                       {% else %}
                         <li><a href="{% url 'main:login' %}" class="nav-link px-2 text-white">Login</a></li>
-                        <li><a href="{% url 'main:signup' %}" class="nav-link px-2 text-white">Sign up</a></li>
+                        <li><a href="{% url 'main:register' %}" class="nav-link px-2 text-white">Sign up</a></li>
                       {% endif %}
                     </ul>
                   </div>

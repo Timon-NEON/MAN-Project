@@ -9,17 +9,42 @@
     </div>
 
     <div>
+        {% if messages %}
+            {% for message in messages %}
+                <div><h3>{{ message }}</h3></div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div>
+        <form action="{% url 'main:search_extract_data' %}" method="post">
+            {% csrf_token %}
+            {{ search_form }}
+            <button type="submit">Search!</button>
+        </form>
+    </div>
+
+    <div>
         <ol type="1" start="{{ start_value }}">
             {% for info in name_link %}
+            <div class="solid-board search-line">
                 <li id="block_search">
-                    <a href="/crossword/{{ info.link }}">{{ info.name }}</a>
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2  mb-md-0">
+                        <li><a href="/crossword/{{ info.link }}" class="nav-link px-3">{{ info.name }}</a></li>
+                        <li><a href="/user/{{ info.creator_name }}" class="nav-link px-3">{{ info.creator_name }}</a></li>
+                    </ul>
                 </li>
+            </div>
+                
             {% endfor %}
                 
         </ol>
         
 
     </div>
+
+
+    
     <div>
         <div>
             {% if page == 0 %}
