@@ -7,11 +7,9 @@ from django.contrib import messages
 
 
 import random
-import copy
 import ast
 import re
 import time
-import json
 
 from .forms import *
 from .constants import *
@@ -33,6 +31,8 @@ def index(request):
                 'form': NewCrosswordForm(),
             })
     else:
+        if request.COOKIES.get('id') == None:
+            messages.success(request, 'My greating! Let\'s read page About')
         response = render(request, 'crossword/index.html', {
             'form': NewCrosswordForm(),
         })
@@ -145,35 +145,35 @@ def post_crossword(request):
             all_links = CW_db.objects.values_list('link', flat=True)
             if link in all_links:
                 gen_form = NewCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
+                messages.error(request, "Неприпустиме значення назви. Для того, щоб запостити, назва повинна мати незайняте значення.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
                     'draw_form': DrawForm(),
                     'show_demo': id,
-                    'error': "Неприпустиме значення назви. Для того, щоб запостити, назва повинна мати незайняте значення."
                 })
-            if not(bool(re.search('^[a-zA-Z0-9-_]*$', link))):
+            if not(bool(re.search('^[a-zA-Z0-9_-]*$', link))):
                 gen_form = NewCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
+                messages.error(request, "Неприпустиме значення назви. Для того, щоб запостити назва повинна містити лише допустимі символи (a-z, A-Z, _, -, space).")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
                     'draw_form': DrawForm(),
                     'show_demo': id,
-                    'error': "Неприпустиме значення назви. Для того, щоб запостити назва повинна містити лише допустимі символи (a-z, A-Z, _, space)."
                 })
             if len(request.COOKIES.get('name')) > 64:
                 gen_form = NewCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
+                messages.error(request, "Неприпустиме значення назви. Для того, щоб запостити назва повинна містити не більше 64 символів.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
                     'draw_form': DrawForm(),
                     'show_demo': id,
-                    'error': "Неприпустиме значення назви. Для того, щоб запостити назва повинна містити не більше 64 символів."
                 })
             if len(request.COOKIES.get('crossword')) > 131072 or len(request.COOKIES.get('text')) > 131072:
                 gen_form = NewCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
+                messages.error(request, "Неприпустимий опис. Для того, щоб запостити, зменшіть кількість слів або опис до них.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
                     'draw_form': DrawForm(),
                     'show_demo': id,
-                    'error': "Неприпустимий опис. Для того, щоб запостити, зменшіть кількість слів або опис до них."
                 })
             
             new_crossword = CW_db.objects.create(name=request.COOKIES.get('name'),
@@ -181,15 +181,11 @@ def post_crossword(request):
                                                     describe=request.COOKIES.get('text'),
                                                     link=link,
                                                     creator_id=int(User_db.objects.values('pk').get(user_name=request.user.username)['pk']),
-                                                    posting_time=time.time(),
                                                     status=status,
                                                     language=language)
             new_crossword.save()
 
-            #all_crosswords = User_db.objects.values('crosswords_id').get(user_name=request.user.username)['crosswords_id']
-            #all_crosswords = ast.literal_eval(all_crosswords)
-            #all_crosswords.append(CW_db.objects.values('pk').get(name=request.COOKIES.get('name'))['pk'])
-            #User_db.objects.filter(user_name=request.user.username).update(crosswords_id=all_crosswords)
+            messages.success(request, 'Crossword successfully added')
 
             return HttpResponseRedirect(reverse('main:show_crossword', args=(link, )))
 
@@ -208,7 +204,13 @@ def delete_crossword(request, crossword_link):
 
 
 def show_crossword(request, link):
-    db_info = CW_db.objects.get(link=link)
+    check_db = CW_db.objects.filter(link=link)
+    if len(check_db) != 1:
+        messages.success(request, 'Here is no crossword with this link')
+        return render(request, 'crossword/index.html', {
+            'form': NewCrosswordForm(),
+        })
+    db_info = check_db[0]
     name = db_info.name
     best_crossword = db_info.crossword
     text = db_info.describe
@@ -216,7 +218,6 @@ def show_crossword(request, link):
     user_status = db_info.status
     id = request.COOKIES.get('id')
     is_owner = False
-
     
     creator_name = User_db.objects.values('user_name').get(pk=creator_id)['user_name']
     
@@ -237,9 +238,7 @@ def show_crossword(request, link):
 
     if user_status == '2':
         messages.success(request, f"You can't see that crossword, becouse you are nor creator")
-        response = render(request, 'crossword/index.html', {
-            'form': NewCrosswordForm(),
-        })
+        return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
         return response
     
     
@@ -300,6 +299,9 @@ def search_extract_data(request):
             data['language'] = form.cleaned_data['language']
             data['status'] = form.cleaned_data['status']
             data['page'] = 0
+            if not(bool(re.search('^[a-zA-Z0-9-_ ]*$', data['ask']))) or not(bool(re.search('^[a-zA-Z0-9_-]*$', data['creator']))):
+                messages.error(request, "Неприпустиме значення назви or creator.")
+                return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
             link = create_link(data)
             return HttpResponseRedirect(reverse('main:ask_search', args=(link, )))
 
@@ -328,9 +330,9 @@ def search(request, ask):
         else:
             messages.success(request, 'User not found')
             answer_db_info = answer_db_info.filter(pk=0)
-    if language != '' and language != '--':
+    if language != '' and language != '##':
         answer_db_info = answer_db_info.filter(language__contains=language)
-    if status != '' and status != '--':
+    if status != '' and status != '##':
         answer_db_info = answer_db_info.filter(status__contains=status)
     if status == '2':
         answer_db_info = answer_db_info.filter(creator_id=User_db.objects.values('pk').get(user_name=request.user.username)['pk'])
@@ -351,8 +353,8 @@ def search(request, ask):
         creator_info = User_db.objects.get(pk=crossword_element['creator_id'])
         crossword_element['creator_name'] = creator_info.user_name
 
-    if search_form == None:
-        search_form = SearchForm()
+    #if search_form == None:
+    #    search_form = SearchForm()
     return render(request, 'crossword/search.html', {
         'name_link': send_info,
         'max_page': max_page,
@@ -370,12 +372,13 @@ def register(request):
             username = form.cleaned_data.get('username')
             first_name = form.cleaned_data.get('first_name')
             second_name = form.cleaned_data.get('second_name')
+            email = form.cleaned_data.get('email')
             
             messages.success(request, f'Hi, {username}, your account was created successfully!')
             new_user = User_db.objects.create(user_name = username,
                                               first_name = first_name,
                                               second_name = second_name,
-                                              crosswords_id = '[]',
+                                              email = email,
                                               sign_up_time = time.strftime("%d.%m.%G", time.gmtime(time.time())))
             new_user.save()
             return redirect('main:index')
@@ -390,11 +393,20 @@ def register(request):
 
     
 def user_page(request, username):
-    user_data = User_db.objects.values('user_name', 'first_name', 'second_name', 'sign_up_time').get(user_name=username)
+    check_db = User_db.objects.filter(user_name=username)
+    if len(check_db) != 1:
+        messages.success(request, 'Here is no user with this user_name')
+        return render(request, 'crossword/index.html', {
+            'form': NewCrosswordForm(),
+        })
+    user_data = check_db[0]
     return render(request, 'crossword/user_page.html', {
         'username': username,
         'user_data': user_data,
     })
+
+def about_page(request):
+    return render(request, 'crossword/about_page.html')
 
 def test_button(request):
     user_id = request.COOKIES.get('id')

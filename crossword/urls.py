@@ -12,6 +12,7 @@ urlpatterns = [
     path('post', views.post_crossword, name='post'),
 
     path('test/', views.test_button, name='test'),
+    path('about/', views.about_page, name='about'),
 
     path('crossword/<str:link>', views.show_crossword, name='show_crossword'),
     path('delete/<str:crossword_link>', views.delete_crossword, name='delete'),

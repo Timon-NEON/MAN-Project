@@ -6,14 +6,13 @@ class Crosswords(models.Model):
     describe = models.CharField(max_length=131072)
     link = models.CharField(max_length=64, unique=True)
     creator_id = models.IntegerField()
-    posting_time = models.IntegerField(default=0)
     status = models.CharField(max_length=1)
-    language = models.CharField(max_length=25)
+    language = models.CharField(max_length=5)
     
 
 class Users(models.Model):
     user_name = models.CharField(max_length=64)
     first_name = models.CharField(max_length=64)
     second_name = models.CharField(max_length=64)
-    crosswords_id = models.CharField(max_length=10000)
+    email = models.EmailField(max_length=64, null=True)
     sign_up_time = models.CharField(max_length=30)

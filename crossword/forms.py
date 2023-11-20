@@ -35,7 +35,7 @@ class NewCrosswordForm(forms.Form):
     name = forms.CharField(label='')
     words = forms.CharField(label='', widget=Textarea(
         attrs={'placeholder': 'Слова кросворду', 'rows': 10, 'id': 'textar'}), required=False)
-    time = forms.DecimalField(min_value=1, max_value=300)
+    time = forms.DecimalField(min_value=3, max_value=300)
 
 
 class DemoCrosswordForm(forms.Form):
@@ -56,5 +56,5 @@ class DrawForm(forms.Form):
 class SearchForm(forms.Form):
     ask = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Crossword\'s name'}))
     creator = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'placeholder': 'Creator'}))
-    language = forms.ChoiceField(choices=(('--', 'All'),)  + language_template_choices)
-    status = forms.ChoiceField(choices=(('--', 'All'),) + status_choices)
+    language = forms.ChoiceField(choices=(('##', 'All'),)  + language_template_choices)
+    status = forms.ChoiceField(choices=(('##', 'All'),) + status_choices)
