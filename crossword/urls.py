@@ -11,7 +11,7 @@ urlpatterns = [
     path('draw/<str:link>', views.draw, name='draw'),
     path('post', views.post_crossword, name='post'),
 
-    path('test/', views.test_button, name='test'),
+    #path('test/', views.test_button, name='test'),
     path('about/', views.about_page, name='about'),
 
     path('crossword/<str:link>', views.show_crossword, name='show_crossword'),
@@ -27,5 +27,5 @@ urlpatterns = [
     path('login/', auth_view.LoginView.as_view(template_name='crossword/login.html'), name="login"),
     path('logout/', auth_view.LogoutView.as_view(), name='logout'),
 
-    
+    path('<str:link>', views.no_page, name='no_page'),
 ]

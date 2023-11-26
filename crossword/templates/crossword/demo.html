@@ -1,119 +1,128 @@
-{% extends 'crossword/layout.html' %}
-{% load static %}
+{% extends 'crossword/layout.html' %} {% load static %} {% block body %}
+<div class="index">
+    <div class="body-index">
+        <div class="split left">
+            <div class="centered">
+                <div>
+                    <h1 class="title">
+                        {{ crossword_name }}
+                    </h1>
+                </div>
+                {% if is_owner %}
+                <div class="generate">
+                    <form action="{% url 'main:index' %}" method="post">
+                        {% csrf_token %}
+                        <div class="flex-input-form">
+                            <h3 class="text">Назва</h3>
+                            <div class="input-field">{{ form.name }}</div>
+                        </div>
+                        <div class="input-form">
+                            <h3 class="text">Слова й опис</h3>
+                            {{ form.words }}
+                        </div>
+                        <input class="btn" type="submit" value="Використати!" />
+                    </form>
+                </div>
+                {% endif %}
 
-{% block body %}
-    {% if user_status == '0' %}
-    <div>
-        <h1>
-            {{ crossword_name }}
-        </h1>
-    </div>
-    <div>
-        <form action="{% url 'main:index' %}" method="post">
-            {% csrf_token %}
-            <h3>name</h3>
-            {{ form.name }}
-            <h3>words</h3>
-            {{ form.words }}
-            <br><br>
-            <input type="submit" value="Remaking!">
-        </form>
-    </div>
+                {% if is_owner %}
+                <form action="{% url 'main:delete' crossword_link %}" method="post">
+                    {% csrf_token %}
+                    <div id="top_padding"></div>
+                    <input class="btn" type="submit" value="Видалити кросворд" />
+                </form>
+                {% endif %}
 
-    {% if is_owner %}
-        <form action="{% url 'main:delete' crossword_link %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="Delete">
-        </form>
-    {% endif %}
+                <div>
+                    {% if draw_form %}
+                    <div class="">
+                        <form class="flex-input-form" action="{% url 'main:draw' 'demo' %}" method="get">
+                            {% csrf_token %}
+                            <h3 class="text in-line-text">Якість зображення:</h3>
+                            <div class="input-field input-choice" id="right_padding">{{ draw_form.quality }}</div>
+                            <input class="btn" type="submit" value="Малювати" />
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
 
-    <div>
-        <h4>Here demo</h4>
-        <br>
-        <div class="demo-image">
-            <img width="400" src="/media/images/full_crossword_{{ show_demo }}.png" alt="demo crossword">
-        </div>
-    </div>
+                {% if user_status == '0' %}
+                <div>
+                    {% if download %}
+                    <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;" />
+                    <img src="" data-download="/media/images/full_crossword_{{ download }}.png" alt="Full {{crossword_name}} crossword" style="display: none;" />
+                    <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;" />
+                    <button class="btn" id="download-images">Завантажити зображення</button>
+                    {% endif %}
+                </div>
 
-    <div>
-        {% if draw_form %}
-            <form action="{% url 'main:draw' 'demo' %}" method="get">
-                {% csrf_token %}
-                {{ draw_form }}
-                <input type="submit" value="Draw">
-            </form>
-        {% endif %}
-    </div>
-
-    <div>
-        {% if download %}
-        <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;">
-        <img src="" data-download="/media/images/full_crossword_{{ download }}.png" alt="Full {{crossword_name}} crossword" style="display: none;">
-        <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;">
-        <button id="download-images">Завантажити зображення</button>
-        {% endif %}
-    </div>
-
-    {% else %}
-        <div>
-            <h1>
-                {{ crossword_name }}
-            </h1>
-        </div>
-
-        <div>
-            <h4>Here demo</h4>
-            <br>
-            <div class="demo-image">
-                <img width="400" src="/media/images/clear_crossword_{{ show_demo }}.png" alt="demo crossword">
+                {% else %}
+                <div>
+                    {% if download %}
+                    <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;" />
+                    <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;" />
+                    <button class="btn" id="download-images">Завантажити зображення</button>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </div>
+        <div class="split right">
+            <div class="text-message">
+                {% if messages %} {% for message in messages %}
+                <div><h3>{{ message }}</h3></div>
+                {% endfor %} {% endif %}
+            </div>
 
-        <div>
-            {% if draw_form %}
-                <form action="{% url 'main:draw' 'demo' %}" method="get">
-                    {% csrf_token %}
-                    {{ draw_form }}
-                    <input type="submit" value="Draw">
-                </form>
-            {% endif %}
+            <div class="text-message">
+                {% if show_demo == 0 %}
+                <h4>
+                    На жаль, ми не змогли створити кросворд за вашими словами. Ось поради для вирішення проблеми:
+                    <ul>
+                        <li>збільшіть час на генерацію кросворду</li>
+                        <li>додайте нові слова або замініть маленькі слова більшими;</li>
+                    </ul>
+                </h4>
+                {% elif show_demo %}
+                <div>
+                    {% if is_owner %}
+                    <img class="demo_image" src="/media/images/full_crossword_{{ show_demo }}.png" alt="demo crossword" />
+                    {% else %}
+                    <img class="demo_image" src="/media/images/clear_crossword_{{ show_demo }}.png" alt="demo crossword" />
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
         </div>
+    </div>
+</div>
 
-        <div>
-            {% if download %}
-            <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;">
-            <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;">
-            <button id="download-images">Завантажити зображення</button>
-            {% endif %}
-        </div>
-    {% endif %}
+<script>
+    const button = document.getElementById("download-images");
 
-    <script>
-        const button = document.getElementById("download-images");
-    
-        button.addEventListener("click", () => {
-          const images = document.querySelectorAll("img[data-download]");
-    
-          for (const image of images) {
+    button.addEventListener("click", () => {
+        const images = document.querySelectorAll("img[data-download]");
+
+        for (const image of images) {
             const xhr = new XMLHttpRequest();
-    
+
             xhr.open("GET", image.getAttribute("data-download"));
             xhr.responseType = "blob";
-    
+
             xhr.onload = () => {
-              const blob = xhr.response;
-              const url = window.URL.createObjectURL(blob);
-    
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = image.getAttribute("alt");
-    
-              document.body.appendChild(link);
-              link.click();
+                const blob = xhr.response;
+                const url = window.URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = image.getAttribute("alt");
+
+                document.body.appendChild(link);
+                link.click();
             };
-    
+
             xhr.send();
-          }
-        });
-      </script>
+        }
+    });
+</script>
 {% endblock %}

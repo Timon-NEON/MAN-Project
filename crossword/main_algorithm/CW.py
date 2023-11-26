@@ -9,7 +9,10 @@ import copy
 import random
 import time
 
-from crossword.main_algorithm.my_constants import *
+try:
+    from crossword.main_algorithm.my_constants import *
+except:
+    from my_constants import *
 
 
 class Crossword:
@@ -689,8 +692,9 @@ class ReadText:
         pairs = text.split(read_describe_separator)
         for pair in pairs:
             if pair:
+                pair.replace('\r', '')
                 pair_list = pair.split(read_pair_separator)
-                word = pair_list[0].strip()
+                word = pair_list[0].strip().lower()
                 description = pair_list[1].strip()
                 self.describe[word] = description
         return self.describe

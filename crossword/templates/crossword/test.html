@@ -1,0 +1,11 @@
+{% extends 'crossword/layout.html' %}
+{% load static %}
+{% load search_filters %}
+
+{% block body %}
+    <h1></h1>
+    {% with a='ua' %}
+      {{ a|language:"" }}  
+ {% endwith %}
+
+{% endblock %}

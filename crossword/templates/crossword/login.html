@@ -1,23 +1,21 @@
-{% extends 'crossword/layout.html' %}
-{% load static %}
-{% load crispy_forms_tags %}
-
-{% block body %}
-    <link href="{% static 'crossword/styles.css' %}" rel="stylesheet">
-    <div>
-        <h1>Registration!</h1>
-    </div>
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <fieldset>
-            <legend>Sign in now</legend>
-            {{ form|crispy }}   
-        </fieldset>
-
-        <div class="form-group" id="signup-button">
-            <button class="btn ">Sign up</button>
+{% extends 'crossword/layout.html' %} {% load static %} {% load crispy_forms_tags %} {% block body %}
+<div class="simple-background">
+    <div class="simple-body simple-padding">
+        <div class="title simple-y-padding">
+            <h1>Вхід в акаунт</h1>
         </div>
-    </form>
 
+        <form action="" method="post">
+            {% csrf_token %}
+            <fieldset class="simple-y-padding">
+                <legend class="text-message">Увведіть дані про акаунт</legend>
+                {{ form|crispy }}
+            </fieldset>
+
+            <div class="form-group simple-y-padding" id="signup-button">
+                <button class="btn">Увійти</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

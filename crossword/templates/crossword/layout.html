@@ -4,48 +4,31 @@
 <html lang="uk">
     <head>
         <title>Crosswords</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <link href="{% static 'crossword/styles.css' %}" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="{% static 'crossword/styles.css' %}" rel="stylesheet" />
+        <link rel="shortcut icon" href="/media/for_web_page/logo.png" />
     </head>
     <body>
-        <header class="bg-dark py-3">
-            <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                  <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
-                  </a>
-          
-                  <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
-                    <li><a href="/search/page=0" class="nav-link px-2 text-white">Search</a></li>
-                    <li><a href="{% url 'main:about' %}" class="nav-link px-2 text-white">About</a></li>
-                  </ul>
-          
-                  <!--<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-                    <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
-                  </form>-->
-          
-                  <div class="text-end">
-                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                      <li><a href="{% url 'main:test' %}" class="nav-link px-2 text-white">Test</a></li>
-                      {% if user.is_authenticated %}
-                        <li><a href="{% url 'main:logout' %}" class="nav-link px-2 text-white">Logout</a></li>
-                        <li><a href="/user/{{ user.username }}" class="nav-link px-2 text-white">{{ user.username }}</a></li>
-                      {% else %}
-                        <li><a href="{% url 'main:login' %}" class="nav-link px-2 text-white">Login</a></li>
-                        <li><a href="{% url 'main:register' %}" class="nav-link px-2 text-white">Sign up</a></li>
-                      {% endif %}
-                    </ul>
-                  </div>
-                </div>
-                </div>
+        <header class="header">
+            <a href="/"><img class="header-logo" src="/media/for_web_page/logo.png" alt="Лого" /></a>
+            <div class="header-left">
+                <a href="/" class="header-text">Головна</a>
+                <a href="/search/page=0" class="header-text">Пошук</a>
+                <a href="{% url 'main:about' %}" class="header-text">Про проект</a>
+            </div>
+            <div class="header-right text-end">
+                {% if user.is_authenticated %}
+                <a href="{% url 'main:logout' %}" class="header-text">Вийти</a>
+                <a href="/user/{{ user.username }}" class="header-text">{{ user.username }}</a>
+                {% else %}
+                <a href="{% url 'main:login' %}" class="header-text">Увійти</a>
+                <a href="{% url 'main:register' %}" class="header-text">Зареєструватися</a>
+                {% endif %}
+            </div>
         </header>
-        <div class="b-example-divider"></div>
-        
-        <div class="main-div solid-board">
-            {% block body %}
-            {% endblock %}
+
+        <div class="">
+            {% block body %} {% endblock %}
         </div>
-        
     </body>
 </html>

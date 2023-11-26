@@ -3,9 +3,11 @@ link_template = ['ask', 'creator', 'language', 'status', 'page']
 
 #langauge choice template for forms
 language_template_choices = CHOICES_language = (
-                            ('ua', 'Ukranian'),
-                            ('en', 'English'),
-                            ('it', 'Italian'),
+                            ('ua', 'Українська'),
+                            ('en', 'Англійська'),
+                            ('it', 'Італійська'),
+                            ('fr', 'Французька'),
+                            ('pl', 'Польська'),
                             )
 
 #maximum of rows of information about crossword in search page

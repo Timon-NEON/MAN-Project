@@ -1,9 +1,14 @@
-{% extends 'crossword/layout.html' %}
-{% load static %}
-{% load crispy_forms_tags %}
-
-{% block body %}
-    <div>
-        <h1>About page</h1>
+{% extends 'crossword/layout.html' %} {% load static %} {% load crispy_forms_tags %} {% block body %}
+<div class="simple-background">
+    <div class="simple-body simple-padding">
+        <div>
+            <h1 class="title">Про проект</h1>
+        </div>
+        <div class="text-message">
+            <div class="simple-y-padding">
+                Дякую всім за підтримку!
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -1,22 +1,22 @@
-{% extends 'crossword/layout.html' %}
-{% load static %}
-{% load crispy_forms_tags %}
-
-{% block body %}
-    <div>
-        <h1>{{ username }}</h1>
+{% extends 'crossword/layout.html' %} {% load static %} {% block body %}
+<div class="simple-background">
+    <div class="simple-body simple-padding">
+        <div class="title simple-y-padding">
+            <h1>{{ username }}</h1>
+        </div>
+        <div class="text">
+            <ul>
+                <li><p>Username: {{ username }}</p></li>
+                <li><p>Ім'я: {{ user_data.first_name }}</p></li>
+                <li><p>Прізвище: {{ user_data.second_name }}</p></li>
+                <li><p>Реєстрація: {{ user_data.sign_up_time }}</p></li>
+            </ul>
+        </div>
+        <div>
+            <h3 class="simple-y-padding">
+                <a class="customise-link" href="/search/creator={{ username }}~~page=0">Дивитися кросворди автора</a>
+            </h3>
+        </div>
     </div>
-    <div>
-        <ul>
-            <li><p>Username: {{ username }}</p></li>
-            <li><p>First name: {{ user_data.first_name }}</p></li>
-            <li><p>Secong name: {{ user_data.second_name }}</p></li>
-            <li><p>With us since: {{ user_data.sign_up_time }}</p></li>
-        </ul>
-    </div>
-    <div>
-        <h3>
-            <a href="/search/creator={{ username }}~~page=0">Show creator's croswwords</a>
-        </h3>
-    </div>
+</div>
 {% endblock %}

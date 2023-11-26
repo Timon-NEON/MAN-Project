@@ -1,78 +1,109 @@
-{% extends 'crossword/layout.html' %}
-{% load static %}
+{% extends 'crossword/layout.html' %} {% load static %} {% block body %} {% load search_filters %}
+<div class="search">
+    <div class="body">
+        <div class="top">
+            <div class="split left">
+                <div class="centered">
+                    <div>
+                        <h1 class="title">
+                            Пошук кросворда
+                        </h1>
+                    </div>
 
-{% block body %}
-    <div>
-        <h1>
-            Search crossword!
-        </h1>
-    </div>
-
-    <div>
-        {% if messages %}
-            {% for message in messages %}
-                <div><h3>{{ message }}</h3></div>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <div>
-        <form action="{% url 'main:search_extract_data' %}" method="post">
-            {% csrf_token %}
-            {{ search_form }}
-            <button type="submit">Search!</button>
-        </form>
-    </div>
-
-    <div>
-        <ol type="1" start="{{ start_value }}">
-            {% for info in name_link %}
-            <div class="solid-board search-line">
-                <li id="block_search">
-                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2  mb-md-0">
-                        <li><a href="/crossword/{{ info.link }}" class="nav-link px-3">{{ info.name }}</a></li>
-                        <li><a href="/user/{{ info.creator_name }}" class="nav-link px-3">{{ info.creator_name }}</a></li>
-                    </ul>
-                </li>
+                    <div>
+                        <div>
+                            <form action="{% url 'main:search_extract_data' %}" method="post">
+                                {% csrf_token %}
+                                <div class="flex-input-form">
+                                    <h3 class="text">Назва:</h3>
+                                    <div class="input-field">{{ search_form.ask }}</div>
+                                </div>
+                                <div class="flex-input-form">
+                                    <h3 class="text">Автор:</h3>
+                                    <div class="input-field">{{ search_form.creator }}</div>
+                                </div>
+                                <div class="flex-input-form">
+                                    <h3 class="text">Мова:</h3>
+                                    <div class="input-field input-choice">{{ search_form.language }}</div>
+                                    <h3 class="text" id="left_padding">Статус:</h3>
+                                    <div class="input-field input-choice">{{ search_form.status }}</div>
+                                </div>
+                                <button class="btn" type="submit">Шукати!</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-                
-            {% endfor %}
-                
-        </ol>
-        
-
-    </div>
-
-
-    
-    <div>
-        <div>
-            {% if page == 0 %}
-                <form action="">
-                    {% csrf_token %}
-                    <input type="submit" value="◀️">
-                </form>
-            {% else %}
-            <form action="/search_backward/{{ link }}">
-                {% csrf_token %}
-                <input type="submit" value="◀️">
-            </form>
-            {% endif %}
+            <div class="split right">
+                <div class="centered">
+                    <div class="text-message">
+                        {% if messages %} {% for message in messages %}
+                        <div><h3>{{ message }}</h3></div>
+                        {% endfor %} {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div>
-            {% if page == max_page %}
-                <form action="">
-                    {% csrf_token %}
-                    <input type="submit" value="▶️">
-                </form>
-            {% else %}
-            <form action="/search_forward/{{ link }}">
-                {% csrf_token %}
-                <input type="submit" value="▶️">
-            </form>
-            {% endif %}
+        <div class="bottom">
+            <div class="">
+                <table class="my-table" cellspacing="0">
+                    <tbody>
+                        <tr class="my-table-head">
+                            <th width="7%" nowrap="yes">№</th>
+                            <th width="45%" nowrap="yes">Назва</th>
+                            <th width="13%" nowrap="yes">Мова</th>
+                            <th width="13%" nowrap="yes">Статус</th>
+                            <th width="27%" nowrap="yes">Автор</th>
+                        </tr>
+                        {% for info in name_link %}
+                        <tr class="my-table-row">
+                            <th width="7%" nowrap="yes">{{ start_value|add:forloop.counter0 }}</th>
+                            <th width="45%" nowrap="yes">
+                                <a href="/crossword/{{ info.link }}" class="customise-link">{{ info.name }}</a>
+                            </th>
+                            <th width="13%" nowrap="yes">
+                                {{ info.language|language:""}}
+                            </th>
+                            <th width="13%" nowrap="yes">
+                                {{ info.status|status:""}}
+                            </th>
+                            <th width="27%" nowrap="yes">
+                                <a href="/user/{{ info.creator_name }}" class="customise-link">{{ info.creator_name }}</a>
+                            </th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-element simple-y-padding">
+                <div class="little-x-padding">
+                    {% if page == 0 %}
+                    <form action="">
+                        {% csrf_token %}
+                        <input type="image" src="/media/for_web_page/arrow-backward-blocked.png" width="20px" alt="Backward" />
+                    </form>
+                    {% else %}
+                    <form action="/search_backward/{{ link }}">
+                        {% csrf_token %}
+                        <input type="image" src="/media/for_web_page/arrow-backward.png" width="20px" alt="Backward" />
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="little-x-padding">
+                    {% if page == max_page %}
+                    <form action="">
+                        {% csrf_token %}
+                        <input type="image" src="/media/for_web_page/arrow-forward-blocked.png" width="20px" alt="arrow-forward" />
+                    </form>
+                    {% else %}
+                    <form action="/search_forward/{{ link }}">
+                        {% csrf_token %}
+                        <input type="image" src="/media/for_web_page/arrow-forward.png" width="20px" alt="arrow-forward" />
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    
+</div>
 {% endblock %}
