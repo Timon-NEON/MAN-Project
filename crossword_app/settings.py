@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0so#6u0r(b*#7*s0si^ey(12a230f4h$)e@)^n@rcvezxanih-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -69,6 +69,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "/var/www/static/",
 ]
 
 WSGI_APPLICATION = 'crossword_app.wsgi.application'

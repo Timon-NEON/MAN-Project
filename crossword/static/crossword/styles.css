@@ -48,8 +48,9 @@ textarea:disabled {
 
 .header-left,
 .header-right {
-    margin: 1% 2%;
+    margin: auto;
     flex: 1;
+    justify-content: center;
 }
 
 .header-right {
@@ -60,20 +61,18 @@ textarea:disabled {
 .header-text{
     color: #f0f0f0;
     width: 5%;
-    font-size: 23px;
+    font-size: 2.7vh;
     font-weight: 500;
     text-decoration: none;
-    margin: 0 2%;
+    margin: 0 1vw;
 
 
 }
 
 .header-logo{
     flex: 0;
-    margin: 10% 0% 10% 50%;
-    width: 75%;
-    float: center;
-    justify-content: center;
+    width: 6vh;
+    margin: 0.5vh 1vw;
 }
 
 
@@ -128,8 +127,11 @@ textarea:disabled {
 }
 
 .input-choice {
-    font-size: 25px;
+    font-size: 3vh;
 }
+
+
+
 
 .element-display-block{
     display: block;
@@ -222,15 +224,19 @@ textarea:disabled {
 
 .my-table-head {
     background-color: #BCBDD3;
-    font-size: 25px;
+    font-size: 3vh;
     border-bottom: 4px solid #94aeb8;
 }
 
 .my-table-row {
-    font-size: 20px;
+    font-size: 2.3vh;
     border-bottom: 1px solid #94aeb8;
 }
 
+.search-btn {
+    width: 2.5vh;
+    margin: 0.5vh 0;
+}
 
 .generate .btn,
 .btn {
@@ -241,25 +247,25 @@ textarea:disabled {
     text-decoration: none;
     display: inline-block;
     color: #08151D;
-    font-size: 20px;
+    font-size: 2.3vh
 }
 
 .generate .btn {
-    font-size: 25px;
+    font-size: 3vh;
 }
 
 .title {
-    font-size: 50px;
+    font-size: 6vh;
     font-weight: 150;
 }
 
 .text-message {
-    font-size: 20px;
+    font-size: 2.3vh;
     font-weight: 100;
 }
 
 .text {
-    font-size: 30px;
+    font-size: 3.5vh;
     
 }
 
@@ -268,7 +274,7 @@ textarea:disabled {
 }
 
 .footer-text {
-    font-size: 15px;
+    font-size: 1.7vh;
     margin: 0;
     padding: 0;
     align-items: end;

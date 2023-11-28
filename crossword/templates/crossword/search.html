@@ -80,12 +80,12 @@
                     {% if page == 0 %}
                     <form action="">
                         {% csrf_token %}
-                        <input type="image" src="/media/for_web_page/arrow-backward-blocked.png" width="20px" alt="Backward" />
+                        <input type="image" src="/media/for_web_page/arrow-backward-blocked.png" class="search-btn" alt="Backward" />
                     </form>
                     {% else %}
                     <form action="/search_backward/{{ link }}">
                         {% csrf_token %}
-                        <input type="image" src="/media/for_web_page/arrow-backward.png" width="20px" alt="Backward" />
+                        <input type="image" src="/media/for_web_page/arrow-backward.png" class="search-btn" alt="Backward" />
                     </form>
                     {% endif %}
                 </div>
@@ -93,12 +93,12 @@
                     {% if page == max_page %}
                     <form action="">
                         {% csrf_token %}
-                        <input type="image" src="/media/for_web_page/arrow-forward-blocked.png" width="20px" alt="arrow-forward" />
+                        <input type="image" src="/media/for_web_page/arrow-forward-blocked.png" class="search-btn" alt="arrow-forward" />
                     </form>
                     {% else %}
                     <form action="/search_forward/{{ link }}">
                         {% csrf_token %}
-                        <input type="image" src="/media/for_web_page/arrow-forward.png" width="20px" alt="arrow-forward" />
+                        <input type="image" src="/media/for_web_page/arrow-forward.png" class="search-btn" alt="arrow-forward" />
                     </form>
                     {% endif %}
                 </div>

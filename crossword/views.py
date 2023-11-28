@@ -20,15 +20,19 @@ from .models import Users as User_db
     
 def index(request):
     if request.method == 'POST':
+        print('in')
         form = DemoCrosswordForm(request.POST)
         if form.is_valid():
-            text = str(ast.literal_eval(request.COOKIES.get('text')).decode('utf-8'))
-            name = str(ast.literal_eval(request.COOKIES.get('name')).decode('utf-8'))
+            print(form.cleaned_data)
+            text = str(form.cleaned_data.get('words'))
+            name = form.cleaned_data.get('name')
             gen_form = NewCrosswordForm(initial={'words': text, 'name': name})
+            print(text, name)
             response = render(request, 'crossword/index.html', {
                 'form': gen_form,
             })
         else:
+            print('else')
             response = render(request, 'crossword/index.html', {
                 'form': NewCrosswordForm(),
             })
@@ -56,14 +60,18 @@ def generate(request):
             crossword.read(text)
             crossword.name = name
             crossword.generate(int(time))
+
+
             if crossword.best_crossword != []:
                 crossword.draw('full_demo', 15, id)
+                draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
+                posting_form = PostingForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
                 
                 response = render(request, 'crossword/index.html', {
                     'form': form,
-                    'draw_form': DrawForm(),
+                    'draw_form': draw_form,
                     'show_demo': id,
-                    'posting_form': PostingForm(),
+                    'posting_form': posting_form,
                 })
             else:
                 messages.error(request, "На жаль, ми не змогли створити кросворд за вашими словами. Радимо додати більше слів та прибрати маленькі слова.")
@@ -71,9 +79,9 @@ def generate(request):
                     'form': form,
                 })
 
-            response.set_cookie(key='name', value=name.encode('utf-8'))
-            response.set_cookie(key='crossword', value=str(crossword.best_crossword).encode('utf-8'))
-            response.set_cookie(key='text', value=text.encode('utf-8'))
+            #response.set_cookie(key='name', value=name.encode('utf-8'))
+            #response.set_cookie(key='crossword', value=str(crossword.best_crossword).encode('utf-8'))
+            #response.set_cookie(key='text', value=text.encode('utf-8'))
             return response
         else:
             response = render(request, 'crossword/index.html', {
@@ -82,23 +90,18 @@ def generate(request):
             return response
         
 def draw(request, link):
-    #if link == 'index':
-    #    path = 'crossword/index.html'
-    #    gen_form = NewCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
-    #else:
-    #    path = 'crossword/demo.html'
-    #    gen_form = DemoCrosswordForm(initial={'words': request.COOKIES.get('text'), 'name': request.COOKIES.get('name')})
-    if request.GET:
-        form = DrawForm(request.GET)
+    if request.method == 'POST':
+        form = DrawForm(request.POST)
         if form.is_valid():
-            quality = int(request.GET['quality'])
-
-
+            print('in')
+            print('name', form.cleaned_data['name'])
+            quality = int(form.cleaned_data['quality'])
+            best_crossword = ast.literal_eval(form.cleaned_data['best_crossword'])
+            text = str(form.cleaned_data['words'])
+            name = str(form.cleaned_data['name'])
 
             id = request.COOKIES.get('id')
-            best_crossword = ast.literal_eval(ast.literal_eval(request.COOKIES.get('crossword')).decode('utf-8'))
-            text = str(ast.literal_eval(request.COOKIES.get('text')).decode('utf-8'))
-            name = str(ast.literal_eval(request.COOKIES.get('name')).decode('utf-8'))
+
 
             if link == 'index':
                 path = 'crossword/index.html'
@@ -130,43 +133,46 @@ def draw(request, link):
             else:
                 crossword.draw('clear', zoom_parameter=quality, id=id)
 
+            draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': best_crossword, 'quality': quality})
+            posting_form = PostingForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
+
             return render(request, path, {
                 'form': gen_form,
-                'draw_form': DrawForm(),
+                'draw_form': draw_form,
                 'download': id,
                 'crossword_name': name,
                 'show_demo': id,
-                'posting_form': PostingForm(),
+                'posting_form': posting_form,
                 'user_status': user_status,
             })
         else:
+            print('else')
             return render(request, 'crossword/index.html', {
                 'form': NewCrosswordForm(),
             })
         
 def post_crossword(request):
-    if request.GET:
-        form = PostingForm(request.GET)
+    if request.method == 'POST':
+        form = PostingForm(request.POST)
         if form.is_valid():
-            status = request.GET['status']
-            language = request.GET['language']
+            status = form.cleaned_data['status']
+            language = form.cleaned_data['language']
+            best_crossword = ast.literal_eval(form.cleaned_data['best_crossword'])
+            text = str(form.cleaned_data['words'])
+            name = str(form.cleaned_data['name'])
 
             id = request.COOKIES.get('id')
-            best_crossword = ast.literal_eval(ast.literal_eval(request.COOKIES.get('crossword')).decode('utf-8'))
-            text = str(ast.literal_eval(request.COOKIES.get('text')).decode('utf-8'))
-            name = str(ast.literal_eval(request.COOKIES.get('name')).decode('utf-8'))
+
             link = name.replace(' ', '_')
 
-
-
-
             all_links = CW_db.objects.values_list('link', flat=True)
+            draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': best_crossword})
             if link in all_links:
                 gen_form = NewCrosswordForm(initial={'words': text, 'name': name})
                 messages.error(request, "Неприпустиме значення назви. Для того, щоб опублікувати, назва повинна мати незайняте значення.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
-                    'draw_form': DrawForm(),
+                    'draw_form': draw_form,
                     'show_demo': id,
                 })
             if not(bool(re.search('^[a-zA-Zа-яА-Я0-9_ґҐіІЇїєЄ\'-]*$', link))):
@@ -174,7 +180,7 @@ def post_crossword(request):
                 messages.error(request, "Неприпустиме значення назви. Для того, щоб опублікувати, назва повинна містити лише допустимі символи (латиниця, кирилиця, тире, нижнє підкреслення, пробіл).")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
-                    'draw_form': DrawForm(),
+                    'draw_form': draw_form,
                     'show_demo': id,
                 })
             if len(name) > 64:
@@ -182,7 +188,7 @@ def post_crossword(request):
                 messages.error(request, "Неприпустиме значення назви. Для того, щоб опублікувати, назва повинна містити не більше 64 символів.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
-                    'draw_form': DrawForm(),
+                    'draw_form': draw_form,
                     'show_demo': id,
                 })
             if len(best_crossword) > 131072 or len(text) > 131072:
@@ -190,7 +196,7 @@ def post_crossword(request):
                 messages.error(request, "Неприпустимий опис. Для того, щоб опублікувати, зменшіть кількість слів або опис до них.")
                 return render(request, 'crossword/index.html', {
                     'form': gen_form,
-                    'draw_form': DrawForm(),
+                    'draw_form': draw_form,
                     'show_demo': id,
                 })
             
@@ -264,20 +270,18 @@ def show_crossword(request, link):
     print(is_owner)
     print(user_status)
     print(creator_id, request.user)
+
+    draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
     
     response = render(request, 'crossword/demo.html', {
         'form': demo_form,
-        'draw_form': DrawForm(),
+        'draw_form': draw_form,
         'show_demo': id,
         'crossword_name': name,
         'crossword_link': link,
         'user_status': user_status,
         'is_owner': is_owner,
     })
-        
-    response.set_cookie(key='name', value=name.encode('utf-8'))
-    response.set_cookie(key='crossword', value=str(best_crossword).encode('utf-8'))
-    response.set_cookie(key='text', value=text.encode('utf-8'))
 
     return response
 

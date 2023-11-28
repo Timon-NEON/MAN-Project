@@ -83,6 +83,7 @@ class Generate:
 
         used_words = []
         all_words = list(self.describe.keys())
+        print(all_words)
         for temp in range(number_used_word):
             new_value = random.choice(all_words)
             used_words.append(new_value)

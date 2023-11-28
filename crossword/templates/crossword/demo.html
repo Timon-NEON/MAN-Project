@@ -8,7 +8,7 @@
                         {{ crossword_name }}
                     </h1>
                 </div>
-                {% if is_owner %}
+                {% if user_status == '0' %}
                 <div class="generate">
                     <form action="{% url 'main:index' %}" method="post">
                         {% csrf_token %}
@@ -36,8 +36,11 @@
                 <div>
                     {% if draw_form %}
                     <div class="">
-                        <form class="flex-input-form" action="{% url 'main:draw' 'demo' %}" method="get">
+                        <form class="flex-input-form" action="{% url 'main:draw' 'demo' %}" method="post">
                             {% csrf_token %}
+                            {{ draw_form.name }}
+                            {{ draw_form.words }}
+                            {{ draw_form.best_crossword }}
                             <h3 class="text in-line-text">Якість зображення:</h3>
                             <div class="input-field input-choice" id="right_padding">{{ draw_form.quality }}</div>
                             <input class="btn" type="submit" value="Малювати" />
@@ -75,23 +78,13 @@
             </div>
 
             <div class="text-message">
-                {% if show_demo == 0 %}
-                <h4>
-                    На жаль, ми не змогли створити кросворд за вашими словами. Ось поради для вирішення проблеми:
-                    <ul>
-                        <li>збільшіть час на генерацію кросворду</li>
-                        <li>додайте нові слова або замініть маленькі слова більшими;</li>
-                    </ul>
-                </h4>
-                {% elif show_demo %}
                 <div>
-                    {% if is_owner %}
+                    {% if user_status == '0' %}
                     <img class="demo_image" src="/media/images/full_crossword_{{ show_demo }}.png" alt="demo crossword" />
                     {% else %}
                     <img class="demo_image" src="/media/images/clear_crossword_{{ show_demo }}.png" alt="demo crossword" />
                     {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>

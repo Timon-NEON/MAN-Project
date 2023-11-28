@@ -39,19 +39,28 @@ class UserRegisterForm(UserCreationForm):
 class PostingForm(forms.Form):
     status = forms.ChoiceField(choices=status_choices)
     language = forms.ChoiceField(choices=language_template_choices)
+    name = forms.CharField(required=False, widget = forms.HiddenInput())
+    words = forms.CharField(required=False, widget = forms.HiddenInput())
+    best_crossword = forms.CharField(required=False, widget = forms.HiddenInput())
+
 
 
 class NewCrosswordForm(forms.Form):
-    name = forms.CharField(label='')
-    words = forms.CharField(label='', widget=Textarea(
+    name = forms.CharField()
+    words = forms.CharField(widget=Textarea(
         attrs={'placeholder': 'Слово - опис до слова\nСлово - опис до слова', 'rows': 10, 'id': 'textar'}), required=False)
     time = forms.DecimalField(min_value=3, max_value=300)
 
 
 class DemoCrosswordForm(forms.Form):
-    name = forms.CharField(label='', disabled=True, required=False)
-    words = forms.CharField(label='', widget=Textarea(
-        attrs={'placeholder': 'Слова кросворду', 'rows': 10, 'id': 'textar'}), required=False, disabled=True)
+    name = forms.CharField(required=False)
+    words = forms.CharField(widget=Textarea(
+        attrs={'placeholder': 'Слова кросворду', 'rows': 9, 'id': 'textar'}), required=False)
+
+class DemoCrosswordWriteableForm(forms.Form):
+    name = forms.CharField(required=False)
+    words = forms.CharField(widget=Textarea(
+        attrs={'placeholder': 'Слова кросворду', 'rows': 9, 'id': 'textar'}), required=False)
 
 
 class DrawForm(forms.Form):
@@ -61,6 +70,9 @@ class DrawForm(forms.Form):
     (20, 'Big')
     )
     quality = forms.ChoiceField(choices=quality_choices)
+    name = forms.CharField(required=False, widget = forms.HiddenInput())
+    words = forms.CharField(required=False, widget = forms.HiddenInput())
+    best_crossword = forms.CharField(required=False, widget = forms.HiddenInput())
 
 
 class SearchForm(forms.Form):

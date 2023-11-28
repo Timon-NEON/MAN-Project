@@ -35,9 +35,12 @@
                 <div>
                     {% if draw_form %}
                     <div class="">
-                        <form class="flex-input-form" action="{% url 'main:draw' 'index' %}" method="get">
+                        <form class="flex-input-form" action="{% url 'main:draw' 'index' %}" method="post">
                             {% csrf_token %}
                             <h3 class="text">Якість зображення:</h3>
+                            {{ draw_form.name }}
+                            {{ draw_form.words }}
+                            {{ draw_form.best_crossword }}
                             <div class="input-field input-choice" id="right_padding">{{ draw_form.quality }}</div>
                             <input class="btn" type="submit" value="Малювати" />
                         </form>
@@ -56,9 +59,12 @@
                 <div>
                     {% if posting_form %} {% if user.is_authenticated %}
                     <div>
-                        <form action="{% url 'main:post' %}" method="get">
+                        <form action="{% url 'main:post' %}" method="post">
                             <div class="flex-input-form">
                                 {% csrf_token %}
+                                {{ posting_form.name }}
+                                {{ posting_form.words }}
+                                {{ posting_form.best_crossword }}
                                 <h3 class="text">Мова:</h3>
                                 <div class="input-field input-choice">{{ posting_form.language }}</div>
                                 <h3 class="text" id="left_padding">Статус:</h3>
@@ -101,7 +107,7 @@
     <div class="flex-element flex-x-center flex-y-end footer-text">
         <a>Щоб зберегти кросворд, необхідно його опублікувати. </a>
         {% if not user.is_authenticated %}
-        <a> Щоб опублікувати кросворд, необхідно&nbsp; <a class="customise-link" href="{% url 'main:login' %}">зареєструватися</a>&nbsp;або&nbsp; <a class="customise-link" href="{% url 'main:register' %}">ввійти в систему в систему</a>.</a>
+        <a>&nbsp;Щоб опублікувати кросворд, необхідно&nbsp; <a class="customise-link" href="{% url 'main:login' %}">зареєструватися</a>&nbsp;або&nbsp; <a class="customise-link" href="{% url 'main:register' %}">ввійти в систему</a>.</a>
         {% endif %}
     </div>
 

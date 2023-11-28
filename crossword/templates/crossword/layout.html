@@ -16,7 +16,7 @@
                 <a href="/search/page=0" class="header-text">Пошук</a>
                 <a href="{% url 'main:about' %}" class="header-text">Про проект</a>
             </div>
-            <div class="header-right text-end">
+            <div class="header-right">
                 {% if user.is_authenticated %}
                 <a href="{% url 'main:logout' %}" class="header-text">Вийти</a>
                 <a href="/user/{{ user.username }}" class="header-text">{{ user.username }}</a>
