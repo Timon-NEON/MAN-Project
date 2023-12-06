@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except:
+    from python-dotenv import load_dotenv
 
 load_dotenv()
 
