@@ -109,7 +109,7 @@ class Generate:
                 for word in alowed_values.copy():  # start permutation
                     array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
                     alowed_values.remove(word)
-                    Generate.__make_permutation_one_crosswords(self, length, array, alowed_values)
+                    Generate.__make_permutation_one_crossword(self, length, array, alowed_values)
                     alowed_values.append(word)
             else:
                 break
@@ -125,7 +125,7 @@ class Generate:
             else:
                 self.all_crosswords.append(self.all_crosswords[1][count])
 
-    def __make_permutation_one_crosswords(self, length: int, crossword: list, alowed_values: list):
+    def __make_permutation_one_crossword(self, length: int, crossword: list, alowed_values: list):
         """Recursive private function that generate one variant of crossword"""
 
         if length == self.required_length and self.generation_time > time.time():  # checking that the crossword is almost done and whether the program still need to look for acceptable variant of crossword
@@ -144,7 +144,7 @@ class Generate:
                     exam_results = Generate.__examine_word(self, word, copy.deepcopy(crossword))
                     if bool(exam_results):  # checking that list keeps values (it can be empty)
                         for result in exam_results:
-                            Generate.__make_permutation_one_crosswords(self, length, result,
+                            Generate.__make_permutation_one_crossword(self, length, result,
                                                                         alowed_values)  # making recursive to adding all words to crossword
                     alowed_values.append(word)
 

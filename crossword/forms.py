@@ -21,14 +21,14 @@ status_choices = (
 
 
 class UserRegisterForm(UserCreationForm):
-    first_name = forms.CharField(max_length=64, required=True, label="Ім'я")
-    second_name = forms.CharField(max_length=64, required=True, label="Прізвище")
+    first_name = forms.CharField(max_length=64, required=False, label="Ім'я")
+    second_name = forms.CharField(max_length=64, required=False, label="Прізвище")
     email = forms.EmailField(max_length=64, required=True)
     password1 = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control', 'type': 'password', 'name': 'password', 'placeholder': 'Password', 'autocomplete': 'on'}),
+        attrs={'class': 'form-control', 'type': 'password', 'name': 'password', 'placeholder': '', 'autocomplete': 'on'}),
         label='Пароль')
     password2 = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control', 'type': 'password', 'name': 'password', 'placeholder': 'Password', 'autocomplete': 'on'}),
+        attrs={'class': 'form-control', 'type': 'password', 'name': 'password', 'placeholder': '', 'autocomplete': 'on'}),
         label='Повторення пароля')
 
     class Meta:

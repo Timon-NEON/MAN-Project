@@ -149,8 +149,22 @@ textarea:disabled {
     padding: 1% 2%;
 }
 
+.my-little-padding {
+    padding: 1% 2%;
+}
+
 .little-x-padding {
     padding: 0% 0.5%;
+}
+
+.img-link {
+    flex: 0;
+    width: 6vh;
+    margin: 0.5vh 1vw 0 0;
+}
+
+#no-margin {
+    margin: 0;
 }
 
 .flex-x-center {
@@ -267,6 +281,10 @@ textarea:disabled {
 .text {
     font-size: 3.5vh;
     
+}
+
+.bolid-text {
+    font-weight: 200;
 }
 
 .in-line-text {
