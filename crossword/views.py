@@ -38,7 +38,7 @@ def index(request):
             })
     else:
         if request.COOKIES.get('id') == None:
-            messages.success(request, 'Вітаємо на форумі. Для початку пропонуємо вам ознайомитись зі сторінкою "Про проект".')
+            messages.success(request, 'Вітаємо на форумі. Для початку пропонуємо вам ознайомитись зі сторінкою "Про проєкт".')
         response = render(request, 'crossword/index.html', {
             'form': NewCrosswordForm(),
         })
@@ -326,7 +326,7 @@ def search_extract_data(request):
             data['language'] = form.cleaned_data['language']
             data['status'] = form.cleaned_data['status']
             data['page'] = 0
-            if not(bool(re.search('^[a-zA-Zа-яА-Я0-9-_ ]*$', data['ask']))) or not(bool(re.search('^[a-zA-Z0-9_-]*$', data['creator']))):
+            if not(bool(re.search('^[a-zA-Zа-яА-Я0-9-_ ]*$', data['ask']))) or not(bool(re.search('^[a-zA-Z0-9_.+@-]*$', data['creator']))):
                 messages.error(request, "Неприпустиме значення назви або креатора для пошуку.")
                 return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
             link = create_link(data)
@@ -397,7 +397,7 @@ def register(request):
             second_name = form.cleaned_data.get('second_name')
             email = form.cleaned_data.get('email')
             
-            messages.success(request, f'Вітаю! Акаунт {username} вдало створено.')
+            messages.success(request, f'Вітаю! Акаунт {username} вдало створено. Можете війти під цим обліковим записом.')
             new_user = User_db.objects.create(user_name = username,
                                               first_name = first_name,
                                               second_name = second_name,

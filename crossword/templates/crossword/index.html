@@ -13,15 +13,15 @@
                     <form action="{% url 'main:generate' %}" method="post">
                         {% csrf_token %}
                         <div class="flex-input-form">
-                            <h3 class="text">Назва</h3>
+                            <h3 class="text" title="Уведіть назву заголовка кросворду. Щоб опублікувати, назва повинна бути унікальною.">Назва</h3>
                             <div class="input-field">{{ form.name }}</div>
                         </div>
                         <div class="input-form">
-                            <h3 class="text">Слова й опис</h3>
+                            <h3 class="text" title="Уведіть слова та опис до них за зазначеним макетом на сторінці 'Про проєкт'">Слова й опис</h3>
                             {{ form.words }}
                         </div>
                         <div class="flex-input-form">
-                            <h3 class="text">Час генерації</h3>
+                            <h3 class="text" title="Уведіть час, який би ви хотіли виділити на генерацію кросворду. Можливий час: від 3 до 300 секунд. В середньому достатній від 5 до 15 секунд.">Час генерації</h3>
                             <div class="input-field">{{ form.time}}</div>
                         </div>
                         {% if show_demo %}
