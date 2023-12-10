@@ -1,0 +1,9 @@
+*.pyc
+*.cpython-310.pyc
+*.png
+.pyc
+.cpython-310.pyc
+.png
+db.sqlite3
+
+key.txt
