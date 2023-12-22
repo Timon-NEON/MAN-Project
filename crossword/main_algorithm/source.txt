@@ -1,16 +1,16 @@
-Тригонометрія - наука, про трикутники.
-Матаналіз - наука про аналіз даних.
-Алгебра - наука про обчислювання.
-Логіка - мистецтво думати.
-Комбінаторика - наука про випадки.
-Топологія - наука про просторове уявлення.
-Статистика - наука про вивчення процесів.
+Тригонометрія = наука, про трикутники.
+Матаналіз = наука про аналіз даних.
+Алгебра = наука про обчислювання.
+Логіка = мистецтво думати.
+Комбінаторика = наука про випадки.
+Топологія = наука про просторове уявлення.
+Статистика = наука про вивчення процесів.
 
 
-Trigonometry - is the science of triangles.
-Metaanalysis - is the science of data analysis.
-Algebra - is the science of calculations.
-Logic - is the art of thinking.
-Combinatorics - is the science of cases.
-Topology - is the science of spatial representation.
-Statistics - the science of studying processes.
+Trigonometry = is the science of triangles.
+Metaanalysis = is the science of data analysis.
+Algebra = is the science of calculations.
+Logic = is the art of thinking.
+Combinatorics = is the science of cases.
+Topology = is the science of spatial representation.
+Statistics = the science of studying processes.

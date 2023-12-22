@@ -42,16 +42,16 @@
                             {{ draw_form.words }}
                             {{ draw_form.best_crossword }}
                             <div class="input-field input-choice" id="right_padding">{{ draw_form.quality }}</div>
-                            <input class="btn" type="submit" value="Малювати" />
+                            <input class="btn" type="submit" value="Зберегти" />
                         </form>
                     </div>
                     {% endif %}
                 </div>
                 <div>
                     {% if download %}
-                    <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Clear {{crossword_name}} crossword" style="display: none;" />
-                    <img src="" data-download="/media/images/full_crossword_{{ download }}.png" alt="Full {{crossword_name}} crossword" style="display: none;" />
-                    <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Describe {{crossword_name}} list" style="display: none;" />
+                    <img src="" data-download="/media/images/clear_crossword_{{ download }}.png" alt="Порожній кросворд {{crossword_name}}" style="display: none;" />
+                    <img src="" data-download="/media/images/full_crossword_{{ download }}.png" alt="Заповнений кросворд {{crossword_name}}" style="display: none;" />
+                    <img src="" data-download="/media/images/describe_list_{{ download }}.png" alt="Опис слів до кросворда {{crossword_name}}" style="display: none;" />
                     <button class="btn" id="download-images">Завантажити зображення</button>
                     {% endif %}
                 </div>

@@ -65,9 +65,9 @@ class DemoCrosswordWriteableForm(forms.Form):
 
 class DrawForm(forms.Form):
     quality_choices = (
-    (5, 'Low'),
-    (10, 'Medium'),
-    (20, 'Big')
+    (5, 'Початкова'),
+    (10, 'Середня'),
+    (20, 'Висока')
     )
     quality = forms.ChoiceField(choices=quality_choices)
     name = forms.CharField(required=False, widget = forms.HiddenInput())

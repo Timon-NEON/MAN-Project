@@ -56,14 +56,36 @@ def generate(request):
             time = form.cleaned_data['time']
             
             id = request.COOKIES.get('id')
+            try:
+                crossword.read(text)
+                crossword.name = name
+            except:
+                messages.error(request, 'Нажаль не вдалося зчитати текст, який ви написали. Радимо притримуватися правил запису слів, які вказані на сторінці "Про проєкт".')
+                response = render(request, 'crossword/index.html', {
+                    'form': form,
+                })
+                return response
 
-            crossword.read(text)
-            crossword.name = name
-            crossword.generate(int(time))
-
+            try:
+                crossword.generate(int(time))
+            except:
+                messages.error(request,
+                               'Нажаль не вдалося згенерувати кросворд. У такому разі просимо зв\'язатися з власником, контакти якого зазначено на сторінці "Про проєкт", та повідомити про помилку.')
+                response = render(request, 'crossword/index.html', {
+                    'form': form,
+                })
+                return response
 
             if crossword.best_crossword != []:
-                crossword.draw('full_demo', 15, id)
+                try:
+                    crossword.draw('full_demo', 15, id)
+                except:
+                    messages.error(request, 'Нажаль не вдалося намалювати кросворд. Радимо прибрати специфічні символи зі слів та опису до них.')
+                    response = render(request, 'crossword/index.html', {
+                        'form': form,
+                    })
+                    return response
+
                 draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
                 posting_form = PostingForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
                 
