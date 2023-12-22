@@ -53,6 +53,7 @@ class Crossword:
         elif draw_set == 'full_demo':
             self.Draw = Draw(self.best_crossword, self.describe, 3, self.name, id)
             self.Draw.full_crossword_image()
+            self.Draw.describe_list()
         elif draw_set == 'clear_demo':
             self.Draw = Draw(self.best_crossword, self.describe, 3, self.name, id)
             self.Draw.clear_crossword_image()
@@ -410,7 +411,7 @@ class Draw:
         self.zoom_parameter = zoom_parameter
         self.describe_dict = describe_dict
         self.name = name
-        self.name_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 18)
+        self.name_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 18)
         
         name = ''
         for count, word in enumerate(self.name.split()):
@@ -461,12 +462,15 @@ class Draw:
         main_layer = ImageDraw.Draw(image)
         main_layer.text((retreat, retreat), text=self.name, font=self.name_font, fill="black")
         
-        self.letter_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 15)
+        self.letter_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 15)
         for coordinate, letter in self.crossword[2].items():
             x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
             y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat + height_title
             main_layer.rectangle([(x, y), (x + square_size, y + square_size)], fill=None, outline="black", width=zoom_parameter + 1)
-            main_layer.text((x + zoom_parameter * 4, y - zoom_parameter * 3), text=letter, fill="black", font=self.letter_font)
+            if letter == 'h' or letter == 't' or letter == 'l' or letter == 'f' or letter == 'b':
+                main_layer.text((x + zoom_parameter * 6, y - zoom_parameter * 1), text=letter, fill="black", font=self.letter_font)
+            else:
+                main_layer.text((x + zoom_parameter * 5, y - zoom_parameter * 1), text=letter, fill="black", font=self.letter_font)
 
         image = self.__add_numbers(image, False, height_title)
 
@@ -494,9 +498,9 @@ class Draw:
         zoom_parameter = self.zoom_parameter
         numbers = ImageDraw.Draw(image)
         if clear:
-            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 6)
+            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 6)
         else:
-            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 4)
+            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 4)
         number = 1
         for word, info in self.crossword[3].items():
             x = (info[0][0] - self.min_x) * (zoom_parameter * 14) + zoom_parameter * 10
@@ -504,15 +508,15 @@ class Draw:
             vector = info[1]
             if vector:
                 if info[0] in self.crossword[1]:
-                    numbers.text((x + zoom_parameter * 5, y), text=str(number), fill="black", font=self.number_font)
+                    numbers.text((x + zoom_parameter * 5, y + zoom_parameter * 0.5), text=str(number), fill="black", font=self.number_font)
                 else:
-                    numbers.text((x + zoom_parameter * 2, y), text=str(number), fill="black", font=self.number_font)
+                    numbers.text((x + zoom_parameter * 2, y + zoom_parameter * 1), text=str(number), fill="black", font=self.number_font)
                 self.describe_number[0][number] = word
             else:
                 if info[0] in self.crossword[1]:
-                    numbers.text((x + zoom_parameter * 1, y + zoom_parameter * 3), text=str(number), fill="black", font=self.number_font)
+                    numbers.text((x + zoom_parameter * 2, y + zoom_parameter * 3), text=str(number), fill="black", font=self.number_font)
                 else:
-                    numbers.text((x + zoom_parameter * 2, y), text=str(number), fill="black", font=self.number_font)
+                    numbers.text((x + zoom_parameter * 2, y + zoom_parameter * 1), text=str(number), fill="black", font=self.number_font)
                 self.describe_number[1][number] = word
             number += 1
 
@@ -523,9 +527,9 @@ class Draw:
         retreat = zoom_parameter * 10
         word_in_row = int(len(self.describe_dict) / draw_ratio_word_in_row)
 
-        self.describe_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 10)
-        self.naming_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 12)
-        self.title_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/FuturaPT-Demi.ttf", zoom_parameter * 15)
+        self.describe_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 10)
+        self.naming_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 12)
+        self.title_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 15)
         
         title_text = 'Опис слів'
         title_verctical_text = 'Вертикальні слова'
