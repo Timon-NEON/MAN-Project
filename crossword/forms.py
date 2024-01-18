@@ -48,7 +48,7 @@ class PostingForm(forms.Form):
 class NewCrosswordForm(forms.Form):
     name = forms.CharField()
     words = forms.CharField(widget=Textarea(
-        attrs={'placeholder': 'Слово - опис до слова\nСлово - опис до слова', 'rows': 10, 'id': 'textar'}), required=False)
+        attrs={'placeholder': 'Слово = опис до слова\nСлово = опис до слова', 'rows': 10, 'id': 'textar'}), required=False)
     time = forms.DecimalField(min_value=3, max_value=300)
 
 

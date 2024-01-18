@@ -78,13 +78,12 @@ class Generate:
 
     def generate_one_crossword(self, generation_time:int = -1, number_used_word:int = -1):
         """Main public function that make preparing and start generate for one variant of crossword"""
-        #if number_used_word > 50: number_used_word = 50 !   CHANG IT    !
+        if number_used_word > 50: number_used_word = 50
         if number_used_word > len(self.describe.keys()) or number_used_word == -1: number_used_word = len(self.describe.keys())
         if generation_time == -1: generation_time = 30
 
         used_words = []
         all_words = list(self.describe.keys())
-        print(all_words)
         for temp in range(number_used_word):
             new_value = random.choice(all_words)
             used_words.append(new_value)
@@ -97,7 +96,7 @@ class Generate:
 
         start_time = time.time()
         while (self.generation_time > time.time()):
-            if 0 < number_used_word: #!   CHANG IT    ! time.time() - start_time
+            if 0 < time.time() - start_time:
                 length = 2  # preparing of length parametr of crossword for permutation function
                 alowed_values = []  # list that keeps words that should be added to crossword
                 used_words_copy = used_words.copy()
@@ -295,16 +294,6 @@ class Generate:
 
         size_point = ((size_x + size_y) / 2) * ((max(size_x, size_y) ** (1 / 4)) / (min(size_x, size_y) ** (1 / 4)))
         return size_point
-
-    def create_window(self):
-        self.CreateInterface = CreateInterface(self.all_crosswords)
-        self.CreateInterface.create_visualisation()
-
-    def draw_crossword(self, zoom_parameter=5):
-        self.Draw = Draw(self.all_crosswords[2], self.describe, zoom_parameter)
-        self.Draw.clear_crossword_image()
-        self.Draw.full_crossword_image()
-        self.Draw.describe_list()
 
 
 
