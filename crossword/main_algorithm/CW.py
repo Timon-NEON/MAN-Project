@@ -8,11 +8,20 @@ import os
 import copy
 import random
 import time
+import platform
 
-try:
-    from crossword.main_algorithm.my_constants import *
-except:
-    from my_constants import *
+if platform.system() == 'Windows':
+    my_path = os.getcwd()
+    lst = my_path.split('\\')
+    crossword_app_PATH = ''
+    for i in lst:
+        crossword_app_PATH += i + '/'
+else:
+    crossword_app_PATH = '/home/crosswordsUa/MAN-Project/'
+
+read_describe_separator = '\n'
+read_pair_separator = '='
+draw_ratio_word_in_row = 2
 
 
 class Crossword:
