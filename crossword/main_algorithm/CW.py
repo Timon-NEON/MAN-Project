@@ -105,23 +105,20 @@ class Generate:
 
         start_time = time.time()
         while (self.generation_time > time.time()):
-            if 0 < time.time() - start_time:
-                length = 2  # preparing of length parametr of crossword for permutation function
-                alowed_values = []  # list that keeps words that should be added to crossword
-                used_words_copy = used_words.copy()
+            length = 2  # preparing of length parametr of crossword for permutation function
+            alowed_values = []  # list that keeps words that should be added to crossword
+            used_words_copy = used_words.copy()
 
-                for temp in range(self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
-                    new_value = random.choice(used_words_copy)
-                    alowed_values.append(new_value)
-                    used_words_copy.remove(new_value)
+            for temp in range(self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
+                new_value = random.choice(used_words_copy)
+                alowed_values.append(new_value)
+                used_words_copy.remove(new_value)
 
-                for word in alowed_values.copy():  # start permutation
-                    array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
-                    alowed_values.remove(word)
-                    Generate.__make_permutation_one_crossword(self, length, array, alowed_values)
-                    alowed_values.append(word)
-            else:
-                break
+            for word in alowed_values.copy():  # start permutation
+                array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
+                alowed_values.remove(word)
+                Generate.__make_permutation_one_crossword(self, length, array, alowed_values)
+                alowed_values.append(word)
         # analysis
         for count in range(len(self.all_crosswords[1])):
             points = self.__get_size_point(self.all_crosswords[1][count])
