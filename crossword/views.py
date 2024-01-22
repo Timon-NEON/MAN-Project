@@ -20,19 +20,15 @@ from .models import Users as User_db
     
 def index(request):
     if request.method == 'POST':
-        print('in')
         form = DemoCrosswordForm(request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
             text = str(form.cleaned_data.get('words'))
             name = form.cleaned_data.get('name')
             gen_form = NewCrosswordForm(initial={'words': text, 'name': name})
-            print(text, name)
             response = render(request, 'crossword/index.html', {
                 'form': gen_form,
             })
         else:
-            print('else')
             response = render(request, 'crossword/index.html', {
                 'form': NewCrosswordForm(),
             })
@@ -115,8 +111,6 @@ def draw(request, link):
     if request.method == 'POST':
         form = DrawForm(request.POST)
         if form.is_valid():
-            print('in')
-            print('name', form.cleaned_data['name'])
             quality = int(form.cleaned_data['quality'])
             best_crossword = ast.literal_eval(form.cleaned_data['best_crossword'])
             text = str(form.cleaned_data['words'])
@@ -134,7 +128,7 @@ def draw(request, link):
                 gen_form = DemoCrosswordForm(
                     initial={'words': text, 'name': name})
 
-            user_status = 0
+            user_status = '0'
 
             if link == 'demo':
                 db_info = CW_db.objects.get(link=name.replace(' ', '_'))
@@ -150,7 +144,7 @@ def draw(request, link):
 
             crossword.read(text)
             
-            if user_status == 0:
+            if user_status == '0':
                 crossword.draw('full', zoom_parameter=quality, id=id)
             else:
                 crossword.draw('clear', zoom_parameter=quality, id=id)
@@ -168,7 +162,6 @@ def draw(request, link):
                 'user_status': user_status,
             })
         else:
-            print('else')
             return render(request, 'crossword/index.html', {
                 'form': NewCrosswordForm(),
             })
@@ -289,9 +282,6 @@ def show_crossword(request, link):
         return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
         return response
 
-    print(is_owner)
-    print(user_status)
-    print(creator_id, request.user)
 
     draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
     

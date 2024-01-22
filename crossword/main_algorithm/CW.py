@@ -8,11 +8,20 @@ import os
 import copy
 import random
 import time
+import platform
 
-try:
-    from crossword.main_algorithm.my_constants import *
-except:
-    from my_constants import *
+if platform.system() == 'Windows':
+    my_path = os.getcwd()
+    lst = my_path.split('\\')
+    crossword_app_PATH = ''
+    for i in lst:
+        crossword_app_PATH += i + '/'
+else:
+    crossword_app_PATH = '/home/crosswordsUa/MAN-Project-main/'
+
+read_describe_separator = '\n'
+read_pair_separator = '='
+draw_ratio_word_in_row = 2
 
 
 class Crossword:
@@ -78,13 +87,12 @@ class Generate:
 
     def generate_one_crossword(self, generation_time:int = -1, number_used_word:int = -1):
         """Main public function that make preparing and start generate for one variant of crossword"""
-        #if number_used_word > 50: number_used_word = 50 !   CHANG IT    !
+        if number_used_word > 50: number_used_word = 50
         if number_used_word > len(self.describe.keys()) or number_used_word == -1: number_used_word = len(self.describe.keys())
         if generation_time == -1: generation_time = 30
 
         used_words = []
         all_words = list(self.describe.keys())
-        print(all_words)
         for temp in range(number_used_word):
             new_value = random.choice(all_words)
             used_words.append(new_value)
@@ -97,23 +105,20 @@ class Generate:
 
         start_time = time.time()
         while (self.generation_time > time.time()):
-            if 0 < number_used_word: #!   CHANG IT    ! time.time() - start_time
-                length = 2  # preparing of length parametr of crossword for permutation function
-                alowed_values = []  # list that keeps words that should be added to crossword
-                used_words_copy = used_words.copy()
+            length = 2  # preparing of length parametr of crossword for permutation function
+            alowed_values = []  # list that keeps words that should be added to crossword
+            used_words_copy = used_words.copy()
 
-                for temp in range(self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
-                    new_value = random.choice(used_words_copy)
-                    alowed_values.append(new_value)
-                    used_words_copy.remove(new_value)
+            for temp in range(self.required_length):  # generating random word order for alowed_values (for making different crosswords from the same input words)
+                new_value = random.choice(used_words_copy)
+                alowed_values.append(new_value)
+                used_words_copy.remove(new_value)
 
-                for word in alowed_values.copy():  # start permutation
-                    array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
-                    alowed_values.remove(word)
-                    Generate.__make_permutation_one_crossword(self, length, array, alowed_values)
-                    alowed_values.append(word)
-            else:
-                break
+            for word in alowed_values.copy():  # start permutation
+                array = Generate.__insert_word(self, word, False, 0, 0, [0, [], {}, {}])
+                alowed_values.remove(word)
+                Generate.__make_permutation_one_crossword(self, length, array, alowed_values)
+                alowed_values.append(word)
         # analysis
         for count in range(len(self.all_crosswords[1])):
             points = self.__get_size_point(self.all_crosswords[1][count])
@@ -295,16 +300,6 @@ class Generate:
 
         size_point = ((size_x + size_y) / 2) * ((max(size_x, size_y) ** (1 / 4)) / (min(size_x, size_y) ** (1 / 4)))
         return size_point
-
-    def create_window(self):
-        self.CreateInterface = CreateInterface(self.all_crosswords)
-        self.CreateInterface.create_visualisation()
-
-    def draw_crossword(self, zoom_parameter=5):
-        self.Draw = Draw(self.all_crosswords[2], self.describe, zoom_parameter)
-        self.Draw.clear_crossword_image()
-        self.Draw.full_crossword_image()
-        self.Draw.describe_list()
 
 
 
