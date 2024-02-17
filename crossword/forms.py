@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.views.generic import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
+from django.core.validators import RegexValidator
+
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
@@ -19,8 +21,11 @@ status_choices = (
     ('2', 'Приватний')
     )
 
+AlphanumericValidator = RegexValidator(r'^[0-9a-zA-Z]*$', 'Доступні лише латинські літери та букви.')
+
 
 class UserRegisterForm(UserCreationForm):
+    username = forms.CharField(max_length=20, required=True, label="Ім'я користувача", validators=[AlphanumericValidator])
     first_name = forms.CharField(max_length=64, required=False, label="Ім'я")
     second_name = forms.CharField(max_length=64, required=False, label="Прізвище")
     email = forms.EmailField(max_length=64, required=True)

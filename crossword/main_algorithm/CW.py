@@ -10,14 +10,9 @@ import random
 import time
 import platform
 
-if platform.system() == 'Windows':
-    my_path = os.getcwd()
-    lst = my_path.split('\\')
-    crossword_app_PATH = ''
-    for i in lst:
-        crossword_app_PATH += i + '/'
-else:
-    crossword_app_PATH = '/home/crosswordsUa/MAN-Project-main/'
+from django.conf import settings
+
+crossword_app_PATH = settings.BASE_DIR
 
 read_describe_separator = '\n'
 read_pair_separator = '='
@@ -406,7 +401,7 @@ class Draw:
         self.zoom_parameter = zoom_parameter
         self.describe_dict = describe_dict
         self.name = name
-        self.name_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 18)
+        self.name_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 18)
         
         name = ''
         for count, word in enumerate(self.name.split()):
@@ -439,7 +434,7 @@ class Draw:
 
         image = self.__add_numbers(image, True, height_title)
 
-        image.save(crossword_app_PATH + f'media/images/clear_crossword_{self.id}.png')
+        image.save(os.path.join(crossword_app_PATH, f'media/images/clear_crossword_{self.id}.png'))
 
     def full_crossword_image(self):
         self.__get_size()
@@ -457,7 +452,7 @@ class Draw:
         main_layer = ImageDraw.Draw(image)
         main_layer.text((retreat, retreat), text=self.name, font=self.name_font, fill="black")
         
-        self.letter_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 15)
+        self.letter_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 15)
         for coordinate, letter in self.crossword[2].items():
             x = (coordinate[0] - self.min_x) * (square_size - zoom_parameter) + retreat
             y = (self.max_y - coordinate[1]) * (square_size - zoom_parameter) + retreat + height_title
@@ -469,7 +464,7 @@ class Draw:
 
         image = self.__add_numbers(image, False, height_title)
 
-        image.save(crossword_app_PATH + f'media/images/full_crossword_{self.id}.png')
+        image.save(os.path.join(crossword_app_PATH, f'media/images/full_crossword_{self.id}.png'))
 
     def __get_size (self):
         """Auxiliary private function that give max_x, min_x, max_y, min_y coordinate from crossword"""
@@ -493,9 +488,9 @@ class Draw:
         zoom_parameter = self.zoom_parameter
         numbers = ImageDraw.Draw(image)
         if clear:
-            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 6)
+            self.number_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 6)
         else:
-            self.number_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 4)
+            self.number_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 4)
         number = 1
         for word, info in self.crossword[3].items():
             x = (info[0][0] - self.min_x) * (zoom_parameter * 14) + zoom_parameter * 10
@@ -522,9 +517,9 @@ class Draw:
         retreat = zoom_parameter * 10
         word_in_row = int(len(self.describe_dict) / draw_ratio_word_in_row)
 
-        self.describe_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 10)
-        self.naming_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 12)
-        self.title_font = ImageFont.truetype(crossword_app_PATH + "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf", zoom_parameter * 15)
+        self.describe_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 10)
+        self.naming_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 12)
+        self.title_font = ImageFont.truetype(os.path.join(crossword_app_PATH, "crossword/main_algorithm/helpfull_files/Anonymous_Pro_B.ttf"), zoom_parameter * 15)
         
         title_text = 'Опис слів'
         title_verctical_text = 'Вертикальні слова'
@@ -595,7 +590,7 @@ class Draw:
         writing.text((retreat, height_list[4]), text=title_horizontal_text, font=self.naming_font, fill="black")
         writing.text((retreat, height_list[5]), text=horizontal_word_text, font=self.describe_font, fill="black")
 
-        image.save(crossword_app_PATH + f'media/images/describe_list_{self.id}.png')
+        image.save(os.path.join(crossword_app_PATH, f'media/images/describe_list_{self.id}.png'))
 
 class ReadText:
 

@@ -12,3 +12,6 @@ language_template_choices = CHOICES_language = (
 
 #maximum of rows of information about crossword in search page
 max_search_rows = 10
+
+#maximum of symbols of crossword`s name on search page
+max_crosswords_name_symbols = 50

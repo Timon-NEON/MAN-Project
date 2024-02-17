@@ -49,7 +49,7 @@
                 <table class="my-table" cellspacing="0">
                     <tbody>
                         <tr class="my-table-head">
-                            <th width="7%" nowrap="yes">№</th>
+                            <th style="text-align:center!important;" width="7%" nowrap="yes">№</th>
                             <th width="45%" nowrap="yes">Назва</th>
                             <th width="13%" nowrap="yes">Мова</th>
                             <th width="13%" nowrap="yes">Статус</th>
@@ -57,9 +57,9 @@
                         </tr>
                         {% for info in name_link %}
                         <tr class="my-table-row">
-                            <th width="7%" nowrap="yes">{{ start_value|add:forloop.counter0 }}</th>
+                            <th style="text-align:center!important;" width="7%" nowrap="yes">{{ start_value|add:forloop.counter0 }}</th>
                             <th width="45%" nowrap="yes">
-                                <a href="/crossword/{{ info.link }}" class="customise-link">{{ info.name }}</a>
+                                <a href="/crossword/{{ info.link }}" class="customise-link">{{ info.name|to_cut:""}}</a>
                             </th>
                             <th width="13%" nowrap="yes">
                                 {{ info.language|language:""}}

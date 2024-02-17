@@ -92,7 +92,7 @@ def generate(request):
                     'posting_form': posting_form,
                 })
             else:
-                messages.error(request, "На жаль, ми не змогли створити кросворд за вашими словами. Радимо додати більше слів та прибрати маленькі слова.")
+                messages.error(request, "На жаль, ми не змогли створити кросворд за вашими словами. Радимо встановити час генерації 20 секунд, або додати більше слів та прибрати маленькі слова.")
                 response = render(request, 'crossword/index.html', {
                     'form': form,
                 })
@@ -224,7 +224,7 @@ def post_crossword(request):
                                                     language=language)
             new_crossword.save()
 
-            messages.success(request, 'Кросворд вдало опублікований!')
+            messages.success(request, 'Кросворд вдало опубліковано!')
 
             return HttpResponseRedirect(reverse('main:show_crossword', args=(link, )))
 
@@ -234,10 +234,13 @@ def delete_crossword(request, crossword_link):
     crossword_name = crossword_info.name
     creator_id = crossword_info.creator_id
     creator_name = User_db.objects.values('user_name').get(pk=creator_id)['user_name']
-    if creator_name == request.user.username:
-        messages.success(request, f"Кросворд '{crossword_name}' вдало видалено!")
-        CW_db.objects.filter(link=crossword_link).delete()
-    else:
+    try:
+        if creator_name == request.user.username:
+            messages.success(request, f"Кросворд '{crossword_name}' вдало видалено!")
+            CW_db.objects.filter(link=crossword_link).delete()
+        else:
+            messages.error(request, f"Ви не маєте право видаляти цей кросворд.")
+    except:
         messages.error(request, f"Ви не маєте право видаляти цей кросворд.")
     return HttpResponseRedirect(reverse('main:index'))
 
@@ -280,7 +283,6 @@ def show_crossword(request, link):
     if user_status == '2':
         messages.info(request, f"Ви не маєте право бачити приватні кросворди інших користувачів.")
         return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
-        return response
 
 
     draw_form = DrawForm(initial={'words': text, 'name': name, 'best_crossword': str(crossword.best_crossword)})
@@ -338,8 +340,8 @@ def search_extract_data(request):
             data['language'] = form.cleaned_data['language']
             data['status'] = form.cleaned_data['status']
             data['page'] = 0
-            if not(bool(re.search('^[a-zA-Zа-яА-Я0-9-_ ]*$', data['ask']))) or not(bool(re.search('^[a-zA-Z0-9_.+@-]*$', data['creator']))):
-                messages.error(request, "Неприпустиме значення назви або креатора для пошуку.")
+            if not(bool(re.search('^[a-zA-Zа-яА-Я0-9-_ ]*$', data['ask']))):
+                messages.error(request, "Неприпустиме значення назви або автора для пошуку.")
                 return HttpResponseRedirect(reverse('main:ask_search', args=('page=0', )))
             link = create_link(data)
             return HttpResponseRedirect(reverse('main:ask_search', args=(link, )))
@@ -363,14 +365,15 @@ def search(request, ask):
         if User_db.objects.filter(user_name=creator).count() == 1:
             answer_db_info = answer_db_info.filter(creator_id=User_db.objects.values('pk').get(user_name=creator)['pk'])
         else:
-            messages.success(request, 'Не існує користувача за вказаним user_name.')
+            messages.success(request, 'Не існує автора за вказаним ім\'ям.')
             answer_db_info = answer_db_info.filter(pk=0)
     if language != '' and language != '$$':
         answer_db_info = answer_db_info.filter(language__contains=language)
     if status != '' and status != '$$':
         answer_db_info = answer_db_info.filter(status__contains=status)
-    if status == '2':
-        answer_db_info = answer_db_info.filter(creator_id=User_db.objects.values('pk').get(user_name=request.user.username)['pk'])
+
+    #if status == '2':
+    #    answer_db_info = answer_db_info.filter(creator_id=User_db.objects.values('pk').get(user_name=request.user.username)['pk'])
 
     answer_db_info = answer_db_info.reverse()
     answer_db_info = answer_db_info.values('name', 'link', 'creator_id', 'language', 'status')
@@ -409,7 +412,7 @@ def register(request):
             second_name = form.cleaned_data.get('second_name')
             email = form.cleaned_data.get('email')
             
-            messages.success(request, f'Вітаю! Акаунт {username} вдало створено. Можете війти під цим обліковим записом.')
+            messages.success(request, f'Вітаю! Акаунт {username} вдало створено. Можете увійти під цим обліковим записом.')
             new_user = User_db.objects.create(user_name = username,
                                               first_name = first_name,
                                               second_name = second_name,

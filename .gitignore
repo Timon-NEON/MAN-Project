@@ -4,7 +4,11 @@
 .pyc
 .cpython-310.pyc
 .png
-db.sqlite3
 __pycache__/
 
 key.txt
+
+venv/
+.idea/
+
+!media/for_web_page/
